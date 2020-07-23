@@ -17,6 +17,7 @@ pgpool_build_opts: --prefix={{ pgpool_root_directory }} --with-openssl
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password: $6$pofmRRIAXzIh43zu$CRn60pwNFBS/VHedm2gg.sKK3ZEbxCaX/ZslwPA1XMZiVE3.2iKZ.B7T8jZifZ6LtCqRRfV8y4Sbb0FymVwIr. # sha-512 hashed string 'pgpool'
+
 # pgpool pool_passwd file
 pgpool_passwd_use_md5: yes
 pgpool_passwd_users_md5: 
