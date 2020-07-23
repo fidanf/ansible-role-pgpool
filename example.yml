@@ -18,7 +18,7 @@
         name: python
         priority: 1
   roles:
-    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
+    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-pgpool' }}"
       vars:
         # backend settings
         pgpool_backend_servers:
