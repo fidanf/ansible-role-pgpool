@@ -1,0 +1,103 @@
+---
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ role_path }}/vars/{{ ansible_distribution_release }}.yml"
+    - "{{ role_path }}/vars/empty.yml"
+  tags: ['always']
+
+- name: Install build dependencies
+  apt:
+    name: "{{ pgpool_apt_dependencies }}"
+    state: present
+
+- name: Create pgpool user
+  user:
+    name: "{{ pgpool_user }}"
+    shell: /bin/bash
+    home: "{{ pgpool_root_directory }}/etc"
+    password: "{{ pgpool_password }}"
+    update_password: always
+    groups: 
+      - "{{ pgpool_group }}"
+    append: yes
+
+- name: Download tar archive
+  get_url:
+    url: "http://www.pgpool.net/download.php?f=pgpool-II-{{ pgpool_version }}.tar.gz"
+    dest: "/tmp/pgpool-{{ pgpool_version }}.tar.gz"
+  register: pgpool_archive
+
+- name: Ensure build and destination directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+  loop:
+    - "{{ pgpool_build_directory }}"
+    - "{{ pgpool_root_directory }}"
+    - "{{ pgpool_logdir }}"
+
+- name: Extract archive
+  unarchive:
+    src: "{{ pgpool_archive.dest }}"
+    dest: "{{ pgpool_build_directory }}"
+    remote_src: yes
+    extra_opts: 
+      - --strip-components=1
+
+- name: Build pgpool
+  shell:
+    cmd: |
+      ./configure {{ pgpool_build_opts }}
+      make -j{{ ansible_processor_cores }} >/dev/null 2>&1
+      make install
+    chdir: "{{ pgpool_build_directory }}"
+
+- name: Refresh permissions
+  file:
+    path: "{{ pgpool_root_directory }}/etc"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+    recurse: yes
+
+- name: Create socket directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+  loop:
+    - "{{ pgpool_socket_dir }}"
+    - "{{ pgpool_pcp_socket_dir }}"
+    - "{{ pgpool_wd_ipc_socket_dir }}"
+
+- name: Upload pgpool.conf
+  template:
+    src: pgpool.conf.j2
+    dest: "{{ pgpool_root_directory }}/etc/pgpool.conf"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+
+- name: Upload pcp.conf
+  template:
+    src: pcp.conf.j2
+    dest: "{{ pgpool_root_directory }}/etc/pcp.conf"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+
+- name: Generate pool_passwd file using md5 method
+  shell:
+    cmd: |
+      /usr/local/bin/pg_md5 --md5auth --username={{ pgpool_md5_user }} {{ pgpool_md5_password }}
+  become_user: "{{ pgpool_user }}"
+  when: 
+    - pgpool_md5_authentication
+    - pgpool_md5_user is defined and pgpool_md5_user
+    - pgpool_md5_password is defined and pgpool_md5_password

@@ -1,0 +1,30 @@
+---
+galaxy_info:
+  author: Frank FIDANZA
+  company: RG
+  role_name: pgpool
+  description: Installs and configures Pgpool-II
+  min_ansible_version: 2.8
+  license: MIT
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+    - name: Ubuntu
+      versions:
+        - bionic
+  galaxy_tags:
+    - pgpool
+    - postgresql
+    - cluster
+    - replication
+    - load-balancing
+    - fault-tolerance
+    - watchdog
+    - database
+    - rdbms
+    - sql
+    - debian
+    - ubuntu
+
+dependencies: []

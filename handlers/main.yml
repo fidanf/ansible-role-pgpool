@@ -1,0 +1,5 @@
+---
+- name: reload pgpool
+  shell:
+    cmd: pgpool reload
+  become_user: "{{ pgpool_user }}"

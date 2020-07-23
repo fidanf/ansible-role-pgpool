@@ -1,0 +1,51 @@
+---
+- hosts: pgpool
+  gather_facts: yes
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
+  pre_tasks:
+    - name: Install python dependencies
+      apt: 
+        name: 
+          - python3-apt
+        update_cache: yes
+    - name: Use python3 by default
+      alternatives: 
+        path: /usr/bin/python3
+        link: /usr/bin/python
+        name: python
+        priority: 1
+  roles:
+    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
+      vars:
+        # backend settings
+        pgpool_backend_servers:
+          - hostname: pgsql01
+            port: 5432
+            weight: 1
+            data_directory: /var/lib/postgresql/11/main
+            flag: ALLOW_TO_FAILOVER
+            application_name: pgsql01
+          - hostname: pgsql02
+            port: 5432
+            weight: 2
+            data_directory: /var/lib/postgresql/11/main
+            flag: ALLOW_TO_FAILOVER
+            application_name: pgsql02
+          - hostname: pgsql03
+            port: 5432
+            weight: 3
+            data_directory: /var/lib/postgresql/11/main
+            flag: ALLOW_TO_FAILOVER
+            application_name: pgsql03
+        # logs
+        pgpool_log_statement: 'on'
+        pgpool_log_per_node_statement: 'on'
+        # load-balancing
+        pgpool_load_balance_mode: 'on'
+        # running mode
+        pgpool_sr_check_user: repmgr
+        pgpool_sr_check_password: repmgr
+        pgpool_sr_check_database: postgres

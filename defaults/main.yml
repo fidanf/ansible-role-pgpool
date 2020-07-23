@@ -1,0 +1,155 @@
+---
+# pgpool installation/setup
+pgpool_apt_dependencies:
+  - software-properties-common
+  - postgresql-client
+  - postgresql-client-common
+  - postgresql-common
+  - libpq-dev
+pgpool_version: "4.1.2"
+pgpool_root_directory: /usr/local
+pgpool_build_directory: /usr/src/pgpool2
+pgpool_build_opts: --prefix={{ pgpool_roo_directory }} --with-openssl
+pgpool_user: pgpool
+pgpool_password: pgpool
+pgpool_group: pgpool
+
+# pgpool connection settings
+pgpool_listen_addresses: '*'
+pgpool_port: 9999
+pgpool_socket_dir: /var/run/pgpool
+pgpool_listen_backlog_multiplier: 2
+pgpool_serialize_accept: 'off'
+pgpool_reserved_connections: 0
+
+# pcp connection settings
+pgpool_pcp_listen_addresses: '*'
+pgpool_pcp_port: 9898
+pgpool_pcp_socket_dir: /var/run/pcp
+
+# backend connection settings
+pgpool_backend_servers:
+  - hostname: localhost
+    port: 5432
+    weight: 1
+    data_directory: /var/lib/pgsql/data
+    flag: ALLOW_TO_FAILOVER
+    application_name: server0
+
+# authentication 
+pgpool_enable_pool_hba: 'on'
+pgpool_pool_passwd: pool_passwd
+pgpool_authentication_timeout: 60
+pgpool_allow_clear_text_frontend_auth: 'on'
+pgpool_md5_authentication: yes
+pgpool_md5_user: admin
+pgpool_md5_password: secret
+
+# ssl settings
+pgpool_ssl: off
+pgpool_ssl_key: ./server.key
+pgpool_ssl_cert: ./server.cert
+pgpool_ssl_ca_cert: ''
+pgpool_ssl_ca_cert_dir: ''
+pgpool_ssl_ciphers: HIGH:MEDIUM:+3DES:!aNULL
+pgpool_ssl_prefer_server_ciphers: 'off'
+pgpool_ssl_ecdh_curve: prime256v1
+pgpool_ssl_dh_params_file: ''
+
+# pools
+pgpool_num_init_children: 32
+pgpool_max_pool: 4
+pgpool_child_life_time: 300
+pgpool_child_max_connections: 0
+pgpool_connection_life_time: 0
+pgpool_client_idle_limit: 0
+
+# logs
+pgpool_log_destination: syslog,stderr
+pgpool_log_connections: 'off'
+pgpool_log_hostname: 'off'
+pgpool_log_statement: 'off'
+pgpool_log_per_node_statement: 'off'
+pgpool_log_client_messages: 'off'
+pgpool_log_standby_delay: none # one of 'always', 'if_over_threshold', 'none'
+pgpool_syslog_facility: LOCAL0
+pgpool_syslog_ident: pgpool
+
+# file locations
+pgpool_logdir: /var/log/pgpool
+pgpool_pid_file_name: /var/run/pgpool/pgpool.pid
+
+# connection pooling
+pgpool_connection_cache: 'off'
+pgpool_reset_query_list: ABORT; DISCARD ALL
+
+# replication mode
+# 
+
+# load-balancing
+pgpool_load_balance_mode: 'off'
+pgpool_ignore_leading_white_space: 'on'
+pgpool_white_function_list: ''
+pgpool_black_function_list: currval,lastval,nextval,setval
+pgpool_black_query_pattern_list: ''
+pgpool_database_redirect_preference_list: ''
+pgpool_app_name_redirect_preference_list: ''
+pgpool_allow_sql_comments: 'off'
+pgpool_disable_load_balance_on_write: 'transaction' # one of 'transaction', 'trans_transaction' or 'always'
+pgpool_statement_level_load_balance: 'off'
+
+# master/slave mode aka pgpool running mode 
+pgpool_master_slave_mode: 'on'
+pgpool_master_slave_sub_mode: stream
+pgpool_sr_check_period: 10
+pgpool_sr_check_user: 'nobody'
+pgpool_sr_check_password: ''
+pgpool_sr_check_database: ''
+pgpool_delay_threshold: 10000000
+pgpool_follow_master_command: ''
+
+# health check global parameters
+pgpool_health_check_period: 0
+pgpool_health_check_timeout: 20
+pgpool_health_check_user: nobody
+pgpool_health_check_password: ''
+pgpool_health_check_database: ''
+pgpool_health_check_max_retries: 0
+pgpool_health_check_retry_delay: 1
+pgpool_connect_timeout: 10000
+
+# health check per node parameters
+# 
+
+# failover and failback
+#
+
+# online recovery
+# 
+
+# watchdog configuration
+pgpool_use_watchdog: 'off'
+pgpool_wd_ipc_socket_dir: /var/run/watchdog
+
+# others
+pgpool_relcache_expire: 0
+pgpool_relcache_size: 256
+pgpool_check_temp_table: catalog
+pgpool_check_unlogged_table: 'on'
+pgpool_enable_shared_relcache: 'on'
+pgpool_relcache_query_target: master
+
+# in memory query memory cache
+pgpool_in_memory_query_cache: 'off'
+pgpool_memqcache_method: shmem
+pgpool_memqcache_memcached_host: localhost
+pgpool_memqcache_memcached_port: 11211
+pgpool_memqcache_total_size: 67108864
+pgpool_memqcache_max_num_cache: 1000000
+pgpool_memqcache_expire: 0
+pgpool_memqcache_auto_cache_invalidation: 'on'
+pgpool_memqcache_maxcache: 409600
+pgpool_memqcache_cache_block_size: 1048576
+pgpool_memqcache_oiddir: /var/log/pgpool/oiddir
+pgpool_white_memqcache_table_list: ''
+pgpool_black_memqcache_table_list: ''
