@@ -20,6 +20,12 @@
   roles:
     - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-pgpool' }}"
       vars:
+        # pool_passwd
+        pgpool_passwd_users_md5: 
+          - username: pgpool
+            password: pgpool
+          - username: admin
+            password: secret
         # backend settings
         pgpool_backend_servers:
           - hostname: pgsql01

@@ -2,17 +2,26 @@
 # pgpool installation/setup
 pgpool_apt_dependencies:
   - software-properties-common
+  - build-essential
+  - libpq-dev
+  - libssl-dev
+  - libpgpool0
+  - libmemcached11
   - postgresql-client
   - postgresql-client-common
   - postgresql-common
-  - libpq-dev
 pgpool_version: "4.1.2"
 pgpool_root_directory: /usr/local
 pgpool_build_directory: /usr/src/pgpool2
-pgpool_build_opts: --prefix={{ pgpool_roo_directory }} --with-openssl
-pgpool_user: pgpool
-pgpool_password: pgpool
+pgpool_build_opts: --prefix={{ pgpool_root_directory }} --with-openssl
 pgpool_group: pgpool
+pgpool_user: pgpool
+pgpool_password: $6$pofmRRIAXzIh43zu$CRn60pwNFBS/VHedm2gg.sKK3ZEbxCaX/ZslwPA1XMZiVE3.2iKZ.B7T8jZifZ6LtCqRRfV8y4Sbb0FymVwIr. # sha-512 hashed string 'pgpool'
+# pgpool pool_passwd file
+pgpool_passwd_use_md5: yes
+pgpool_passwd_users_md5: 
+  - username: pgpool
+    password: pgpool
 
 # pgpool connection settings
 pgpool_listen_addresses: '*'
@@ -41,9 +50,6 @@ pgpool_enable_pool_hba: 'on'
 pgpool_pool_passwd: pool_passwd
 pgpool_authentication_timeout: 60
 pgpool_allow_clear_text_frontend_auth: 'on'
-pgpool_md5_authentication: yes
-pgpool_md5_user: admin
-pgpool_md5_password: secret
 
 # ssl settings
 pgpool_ssl: off

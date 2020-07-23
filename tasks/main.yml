@@ -11,6 +11,11 @@
     name: "{{ pgpool_apt_dependencies }}"
     state: present
 
+- name: Create pgpool group
+  group:
+    name: "{{ pgpool_group }}"
+    state: present
+
 - name: Create pgpool user
   user:
     name: "{{ pgpool_user }}"
@@ -92,12 +97,11 @@
     group: "{{ pgpool_group }}"
     mode: 0775
 
-- name: Generate pool_passwd file using md5 method
+- name: Generate pool_passwd file using md5 auth method
   shell:
     cmd: |
-      /usr/local/bin/pg_md5 --md5auth --username={{ pgpool_md5_user }} {{ pgpool_md5_password }}
+      /usr/local/bin/pg_md5 --md5auth --username={{ item.username }} {{ item.password }}
+  loop: "{{ pgpool_passwd_users_md5 }}"
+  when: pgpool_passwd_use_md5 | bool
   become_user: "{{ pgpool_user }}"
-  when: 
-    - pgpool_md5_authentication
-    - pgpool_md5_user is defined and pgpool_md5_user
-    - pgpool_md5_password is defined and pgpool_md5_password
+  tags: ['pool_passwd']
