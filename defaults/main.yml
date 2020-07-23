@@ -47,7 +47,7 @@ pgpool_backend_servers:
     application_name: server0
 
 # authentication 
-pgpool_enable_pool_hba: 'on'
+pgpool_enable_pool_hba: 'off'
 pgpool_pool_passwd: pool_passwd
 pgpool_authentication_timeout: 60
 pgpool_allow_clear_text_frontend_auth: 'on'
