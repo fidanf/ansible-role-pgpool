@@ -1,0 +1,4 @@
+id_rsa
+*.key
+*.log
+*.sql
