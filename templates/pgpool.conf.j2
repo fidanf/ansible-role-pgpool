@@ -196,32 +196,34 @@ syslog_ident = '{{ pgpool_syslog_ident }}'
 
 # - Debug -
 
-#log_error_verbosity = default          # terse, default, or verbose messages
+log_error_verbosity = {{ pgpool_log_error_verbosity }}          # terse, default, or verbose messages
 
-#client_min_messages = notice           # values in order of decreasing detail:
-                                        #   debug5
-                                        #   debug4
-                                        #   debug3
-                                        #   debug2
-                                        #   debug1
-                                        #   log
-                                        #   notice
-                                        #   warning
-                                        #   error
+client_min_messages = {{ pgpool_client_min_messages }}            
+                                    # values in order of decreasing detail:
+                                    #   debug5
+                                    #   debug4
+                                    #   debug3
+                                    #   debug2
+                                    #   debug1
+                                    #   log
+                                    #   notice
+                                    #   warning
+                                    #   error
 
-#log_min_messages = warning             # values in order of decreasing detail:
-                                        #   debug5
-                                        #   debug4
-                                        #   debug3
-                                        #   debug2
-                                        #   debug1
-                                        #   info
-                                        #   notice
-                                        #   warning
-                                        #   error
-                                        #   log
-                                        #   fatal
-                                        #   panic
+log_min_messages = {{ pgpool_log_min_messages }}
+                                    # values in order of decreasing detail:
+                                    #   debug5
+                                    #   debug4
+                                    #   debug3
+                                    #   debug2
+                                    #   debug1
+                                    #   info
+                                    #   notice
+                                    #   warning
+                                    #   error
+                                    #   log
+                                    #   fatal
+                                    #   panic
 
 #------------------------------------------------------------------------------
 # FILE LOCATIONS

@@ -23,9 +23,7 @@
     home: "{{ pgpool_root_directory }}/etc"
     password: "{{ pgpool_password }}"
     update_password: always
-    groups: 
-      - "{{ pgpool_group }}"
-    append: yes
+    group: "{{ pgpool_group }}"
 
 - name: Download tar archive
   get_url:
@@ -105,3 +103,8 @@
   when: pgpool_passwd_use_md5 | bool
   become_user: "{{ pgpool_user }}"
   tags: ['pool_passwd']
+
+- name: Create logrotate configuration
+  template:
+    src: pgpool.logrotate.j2
+    dest: /etc/logrotate.d/pgpool

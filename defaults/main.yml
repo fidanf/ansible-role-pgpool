@@ -17,6 +17,8 @@ pgpool_build_opts: --prefix={{ pgpool_root_directory }} --with-openssl
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password: $6$pofmRRIAXzIh43zu$CRn60pwNFBS/VHedm2gg.sKK3ZEbxCaX/ZslwPA1XMZiVE3.2iKZ.B7T8jZifZ6LtCqRRfV8y4Sbb0FymVwIr. # sha-512 hashed string 'pgpool'
+pgpool_logfile_path: /var/log/pgpool/pgpool.log
+pgpool_start_command: pgpool -n -d > {{ pgpool_logfile_path }} 2>&1 &
 
 # pgpool pool_passwd file
 pgpool_passwd_use_md5: yes
@@ -72,7 +74,7 @@ pgpool_connection_life_time: 0
 pgpool_client_idle_limit: 0
 
 # logs
-pgpool_log_destination: syslog,stderr
+pgpool_log_destination: stderr
 pgpool_log_connections: 'off'
 pgpool_log_hostname: 'off'
 pgpool_log_statement: 'off'
@@ -81,6 +83,9 @@ pgpool_log_client_messages: 'off'
 pgpool_log_standby_delay: none # one of 'always', 'if_over_threshold', 'none'
 pgpool_syslog_facility: LOCAL0
 pgpool_syslog_ident: pgpool
+pgpool_log_error_verbosity: default
+pgpool_client_min_messages: notice
+pgpool_log_min_messages: warning
 
 # file locations
 pgpool_logdir: /var/log/pgpool
