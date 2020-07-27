@@ -59,13 +59,23 @@
       make install
     chdir: "{{ pgpool_build_directory }}"
 
-- name: Refresh permissions
+- name: Get pgpool-related binaries
+  find:
+    path: /usr/local/bin
+    patterns: ['pcp_*', 'watchdog_*', 'pg_*']
+  register: pg_binaries
+
+- name: Update binaries permissions
+  file:
+    path: "{{ item.path }}"
+    mode: 0777
+  loop: "{{ pg_binaries.files }}"
+
+- name: Update config files' permissions
   file:
     path: "{{ pgpool_root_directory }}/etc"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
-    mode: 0775
-    recurse: yes
 
 - name: Create socket directories
   file:
