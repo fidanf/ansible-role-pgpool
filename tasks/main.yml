@@ -8,13 +8,13 @@
 
 - import_tasks: _apt.yml
   when: 
-    - pgpool_install_repository | bool
+    - pgpool_apt_install | bool
     - not pgpool_build_sources | bool
   tags: ['apt']
 
 - import_tasks: _source.yml
   when: 
-    - not pgpool_install_repository | bool
+    - not pgpool_apt_install | bool
     - pgpool_build_sources | bool
 
 - name: Create pgpool group

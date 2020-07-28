@@ -1,6 +1,6 @@
 ---
 # apt installation settings
-pgpool_install_repository: yes
+pgpool_apt_install: yes
 pgpool_apt_key_id: "ACCC4CF8"
 pgpool_apt_key_url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
 pgpool_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
@@ -26,8 +26,8 @@ pgpool_logfile_path: /var/log/pgpool/pgpool.log
 pgpool_start_command: pgpool -n -d > {{ pgpool_logfile_path }} 2>&1 &
 
 # pgpool user
-pgpool_home_directory: "{{ '/etc/pgpool2' if pgpool_install_repository else '/usr/local/etc' }}"
-pgpool_binaries_directory: "{{ '/usr/sbin/' if pgpool_install_repository else '/usr/local/bin' }}"
+pgpool_home_directory: "{{ '/etc/pgpool2' if pgpool_apt_install else '/usr/local/etc' }}"
+pgpool_binaries_directory: "{{ '/usr/sbin/' if pgpool_apt_install else '/usr/local/bin' }}"
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password_cleartext: pgpool
