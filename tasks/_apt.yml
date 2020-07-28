@@ -1,0 +1,39 @@
+---
+# https://wiki.postgresql.org/wiki/Apt 
+- name: PgPool | Make sure the CA certificates are available | apt
+  apt:
+    name: 
+      - ca-certificates
+      - gnupg
+    state: present
+
+- name: PgPool | Add PostgreSQL repository apt-key | apt
+  apt_key:
+    id: "{{ pgpool_apt_key_id }}"
+    url: "{{ pgpool_apt_key_url }}"
+    state: present
+
+- name: PgPool | Add PostgreSQL repository | apt
+  apt_repository:
+    repo: "{{ pgpool_apt_repository }}"
+    state: present
+
+- name: PgPool | Add PostgreSQL repository preferences | apt
+  template:
+    src: apt_postgresql_org_pub_repos_apt.j2
+    dest: /etc/apt/preferences.d/apt_postgresql_org_pub_repos_apt.pref
+
+- name: PgPool | Install PgPool | apt
+  apt:
+    name: pgpool2
+    state: present
+    update_cache: yes
+    default_release: "{{ ansible_distribution_release + '-pgdg' }}"
+    cache_valid_time: 3600
+  register: pgpool_install
+
+- name: PgPool | Shutdown systemd-based instance upon first installation
+  service:
+    name: pgpool2
+    state: stopped
+  when: pgpool_install.changed

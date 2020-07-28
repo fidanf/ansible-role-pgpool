@@ -1,0 +1,38 @@
+---
+- name: Ensure build and destination directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+  loop:
+    - "{{ pgpool_build_directory }}"
+    - "{{ pgpool_root_directory }}"
+
+- name: Install build dependencies
+  apt:
+    name: "{{ pgpool_apt_dependencies }}"
+    state: present
+
+- name: Download tar archive
+  get_url:
+    url: "http://www.pgpool.net/download.php?f=pgpool-II-{{ pgpool_version }}.tar.gz"
+    dest: "/tmp/pgpool-{{ pgpool_version }}.tar.gz"
+  register: pgpool_archive
+
+- name: Extract archive
+  unarchive:
+    src: "{{ pgpool_archive.dest }}"
+    dest: "{{ pgpool_build_directory }}"
+    remote_src: yes
+    extra_opts: 
+      - --strip-components=1
+
+- name: Build pgpool
+  shell:
+    cmd: |
+      ./configure {{ pgpool_build_opts }}
+      make -j{{ ansible_processor_cores }} >/dev/null 2>&1
+      make install
+    chdir: "{{ pgpool_build_directory }}"

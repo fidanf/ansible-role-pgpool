@@ -1,6 +1,14 @@
 ---
-# pgpool installation/setup
-pgpool_apt_dependencies:
+# apt installation settings
+pgpool_install_repository: yes
+pgpool_apt_key_id: "ACCC4CF8"
+pgpool_apt_key_url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+pgpool_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
+pgpool_apt_pin_priority: 500
+
+# source installation settings
+pgpool_build_sources: no
+pgpool_build_apt_dependencies:
   - software-properties-common
   - build-essential
   - libpq-dev
@@ -10,23 +18,34 @@ pgpool_apt_dependencies:
   - postgresql-client
   - postgresql-client-common
   - postgresql-common
-pgpool_version: "4.1.2"
+pgpool_build_version: "4.1.2"
 pgpool_root_directory: /usr/local
 pgpool_build_directory: /usr/src/pgpool2
 pgpool_build_opts: --prefix={{ pgpool_root_directory }} --with-openssl
-pgpool_group: pgpool
-pgpool_user: pgpool
-pgpool_password: $6$pofmRRIAXzIh43zu$CRn60pwNFBS/VHedm2gg.sKK3ZEbxCaX/ZslwPA1XMZiVE3.2iKZ.B7T8jZifZ6LtCqRRfV8y4Sbb0FymVwIr. # sha-512 hashed string 'pgpool'
 pgpool_logfile_path: /var/log/pgpool/pgpool.log
 pgpool_start_command: pgpool -n -d > {{ pgpool_logfile_path }} 2>&1 &
 
-# pgpool pool_passwd file
+# pgpool user
+pgpool_home_directory: "{{ '/etc/pgpool2' if pgpool_install_repository else '/usr/local/etc' }}"
+pgpool_binaries_directory: "{{ '/usr/sbin/' if pgpool_install_repository else '/usr/local/bin' }}"
+pgpool_group: pgpool
+pgpool_user: pgpool
+pgpool_password_cleartext: pgpool
+
+# .pcpass file
+pgpool_pcppass_entries: 
+  - hostname: localhost
+    port: 9898
+    user: pgpool
+    password: pgpool
+
+# pool_passwd file
 pgpool_passwd_use_md5: yes
 pgpool_passwd_users_md5: 
   - username: pgpool
     password: pgpool
 
-# pgpool connection settings
+# pgpool Connection Settings
 pgpool_listen_addresses: '*'
 pgpool_port: 9999
 pgpool_socket_dir: /var/run/pgpool
@@ -34,12 +53,12 @@ pgpool_listen_backlog_multiplier: 2
 pgpool_serialize_accept: 'off'
 pgpool_reserved_connections: 0
 
-# pcp connection settings
+# pgpool Communication Manager Connection Settings
 pgpool_pcp_listen_addresses: '*'
 pgpool_pcp_port: 9898
 pgpool_pcp_socket_dir: /var/run/pcp
 
-# backend connection settings
+# Backend Connection Settings 
 pgpool_backend_servers:
   - hostname: localhost
     port: 5432
@@ -48,13 +67,13 @@ pgpool_backend_servers:
     flag: ALLOW_TO_FAILOVER
     application_name: server0
 
-# authentication 
+# Authentication 
 pgpool_enable_pool_hba: 'off'
 pgpool_pool_passwd: pool_passwd
 pgpool_authentication_timeout: 60
 pgpool_allow_clear_text_frontend_auth: 'on'
 
-# ssl settings
+# SSL Connections
 pgpool_ssl: off
 pgpool_ssl_key: ./server.key
 pgpool_ssl_cert: ./server.cert
@@ -65,40 +84,52 @@ pgpool_ssl_prefer_server_ciphers: 'off'
 pgpool_ssl_ecdh_curve: prime256v1
 pgpool_ssl_dh_params_file: ''
 
-# pools
+# POOLS
+# Concurrent session and pool size
 pgpool_num_init_children: 32
 pgpool_max_pool: 4
+# Life time
 pgpool_child_life_time: 300
 pgpool_child_max_connections: 0
 pgpool_connection_life_time: 0
 pgpool_client_idle_limit: 0
 
-# logs
-pgpool_log_destination: stderr
+# LOGS
+# Where to log
+pgpool_log_destination: syslog
+# What to log
 pgpool_log_connections: 'off'
 pgpool_log_hostname: 'off'
 pgpool_log_statement: 'off'
 pgpool_log_per_node_statement: 'off'
 pgpool_log_client_messages: 'off'
 pgpool_log_standby_delay: none # one of 'always', 'if_over_threshold', 'none'
+# Syslog specific
 pgpool_syslog_facility: LOCAL0
 pgpool_syslog_ident: pgpool
+# Debug
 pgpool_log_error_verbosity: default
 pgpool_client_min_messages: notice
 pgpool_log_min_messages: warning
 
-# file locations
+# FILE LOCATIONS
 pgpool_logdir: /var/log/pgpool
 pgpool_pid_file_name: /var/run/pgpool/pgpool.pid
 
-# connection pooling
+# CONNECTION POOLING
 pgpool_connection_cache: 'off'
 pgpool_reset_query_list: ABORT; DISCARD ALL
 
-# replication mode
-# 
+# REPLICATION MODE
+pgpool_replication_mode: 'off'
+pgpool_replicate_select: 'off'
+pgpool_insert_lock: 'on'
+pgpool_lobj_lock_table: ''
+# Degenerate handling
+pgpool_replication_stop_on_mismatch: 'off'
+pgpool_failover_if_affected_tuples_mismatch: 'off'
 
-# load-balancing
+# LOAD BALANCING MODE
 pgpool_load_balance_mode: 'off'
 pgpool_ignore_leading_white_space: 'on'
 pgpool_white_function_list: ''
@@ -110,17 +141,19 @@ pgpool_allow_sql_comments: 'off'
 pgpool_disable_load_balance_on_write: 'transaction' # one of 'transaction', 'trans_transaction' or 'always'
 pgpool_statement_level_load_balance: 'off'
 
-# master/slave mode aka pgpool running mode 
+# MASTER/SLAVE MODE (alias pgpool running mode) 
 pgpool_master_slave_mode: 'on'
 pgpool_master_slave_sub_mode: stream
+# Streaming
 pgpool_sr_check_period: 10
 pgpool_sr_check_user: 'nobody'
 pgpool_sr_check_password: ''
 pgpool_sr_check_database: ''
 pgpool_delay_threshold: 10000000
+# Special commands
 pgpool_follow_master_command: ''
 
-# health check global parameters
+# HEALTH CHECK GLOBAL PARAMETERS
 pgpool_health_check_period: 0
 pgpool_health_check_timeout: 20
 pgpool_health_check_user: nobody
@@ -130,20 +163,82 @@ pgpool_health_check_max_retries: 0
 pgpool_health_check_retry_delay: 1
 pgpool_connect_timeout: 10000
 
-# health check per node parameters
-# 
+# HEALTH CHECK PER NODE PARAMETERS (OPTIONAL)
+# TODO
 
-# failover and failback
-#
+# FAILOVER AND FAILBACK
+pgpool_failover_command: ''
+pgpool_failback_command: ''
+pgpool_failover_on_backend_error: 'on'
+pgpool_detach_false_primary: 'off'
+pgpool_search_primary_node_timeout: 300
+pgpool_auto_failback: 'off'
+pgpool_auto_failback_interval: 60
 
-# online recovery
-# 
+# ONLINE RECOVERY
+pgpool_recovery_user: nobody
+pgpool_recovery_password: ''
+pgpool_recovery_1st_stage_command: ''
+pgpool_recovery_2nd_stage_command: ''
+pgpool_recovery_timeout: 90
+pgpool_client_idle_limit_in_recovery: 0
 
-# watchdog configuration
+# WATCHDOG
+# Enabling
 pgpool_use_watchdog: 'off'
+# Connection to up stream servers
+pgpool_trusted_servers: ''
+ppgool_ping_path: /bin
+# Watchdog communication Settings
+pgpool_wd_hostname: ''
+pgpool_wd_port: 9000
+pgpool_wd_priority: 1
+pgpool_authkey: ''
 pgpool_wd_ipc_socket_dir: /var/run/watchdog
+# Virtual IP control Setting
+pgpool_delegate_IP: ''
+pgpool_if_cmd_path: /sbin
+pgpool_if_up_cmd: /usr/bin/sudo /sbin/ip addr add $_IP_$/24 dev eth0 label eth0:0
+pgpool_if_down_cmd: /usr/bin/sudo /sbin/ip addr del $_IP_$/24 dev eth0
+pgpool_arping_path: /usr/sbin
+pgpool_arping_cmd: /usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth0
+# Behavior on escalation Setting 
+pgpool_clear_memqcache_on_escalation: 'on'
+pgpool_wd_escalation_command: ''
+pgpool_wd_de_escalation_command: ''
+# Watchdog consensus settings for failover
+pgpool_failover_when_quorum_exists: 'on'
+pgpool_failover_require_consensus: 'on'
+pgpool_allow_multiple_failover_requests_from_node: 'off'
+pgpool_enable_consensus_with_half_votes: 'off'
+# Lifecheck Setting
+# common
+pgpool_wd_monitoring_interfaces_list: ''
+pgpool_wd_lifecheck_method: 'heartbeat'
+pgpool_wd_interval: 10
+# heartbeat mode
+pgpool_wd_heartbeat_port: 9694
+pgpool_wd_heartbeat_keepalive: 2
+pgpool_wd_heartbeat_deadtime: 30
+pgpool_heartbeat_destination: []
+# pgpool_heartbeat_destination: 
+#   - hostname: host0_ip1
+#     port: 9694
+#     device: ''
+# query mode
+pgpool_wd_life_point: 3
+pgpool_wd_lifecheck_query: SELECT 1
+pgpool_wd_lifecheck_dbname: template1
+pgpool_wd_lifecheck_user: nobody
+pgpool_wd_lifecheck_password: ''
+# Other pgpool Connection Settings
+pgpool_other_settings: []
+# pgpool_other_settings: 
+#   - hostname: host0
+#     port: 5432
+#     wd_port: 
 
-# others
+# OTHERS
 pgpool_relcache_expire: 0
 pgpool_relcache_size: 256
 pgpool_check_temp_table: catalog
@@ -151,7 +246,7 @@ pgpool_check_unlogged_table: 'on'
 pgpool_enable_shared_relcache: 'on'
 pgpool_relcache_query_target: master
 
-# in memory query memory cache
+# IN MEMORY QUERY MEMORY CACHE
 pgpool_in_memory_query_cache: 'off'
 pgpool_memqcache_method: shmem
 pgpool_memqcache_memcached_host: localhost

@@ -1,0 +1,4 @@
+# hostname:port:user:password
+{% for item in pgpool_pcppass_entries %}
+{{ item.hostname }}:{{ item.port }}:{{ item.user }}:{{ item.password }}
+{% endfor %}

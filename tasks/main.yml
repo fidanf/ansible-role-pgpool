@@ -6,62 +6,38 @@
     - "{{ role_path }}/vars/empty.yml"
   tags: ['always']
 
-- name: Install build dependencies
-  apt:
-    name: "{{ pgpool_apt_dependencies }}"
-    state: present
+- import_tasks: _apt.yml
+  when: 
+    - pgpool_install_repository | bool
+    - not pgpool_build_sources | bool
+  tags: ['apt']
+
+- import_tasks: _source.yml
+  when: 
+    - not pgpool_install_repository | bool
+    - pgpool_build_sources | bool
 
 - name: Create pgpool group
   group:
     name: "{{ pgpool_group }}"
     state: present
 
+- name: Hash pgpool_password_cleartext
+  set_fact: 
+    pgpool_password_hashed: "{{ pgpool_password_cleartext | password_hash('sha512') }}"
+
 - name: Create pgpool user
   user:
     name: "{{ pgpool_user }}"
     shell: /bin/bash
-    home: "{{ pgpool_root_directory }}/etc"
-    password: "{{ pgpool_password }}"
+    home: "{{ pgpool_home_directory }}"
+    password: "{{ pgpool_password_hashed }}"
     update_password: always
     group: "{{ pgpool_group }}"
 
-- name: Download tar archive
-  get_url:
-    url: "http://www.pgpool.net/download.php?f=pgpool-II-{{ pgpool_version }}.tar.gz"
-    dest: "/tmp/pgpool-{{ pgpool_version }}.tar.gz"
-  register: pgpool_archive
-
-- name: Ensure build and destination directory exists
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ pgpool_user }}"
-    group: "{{ pgpool_group }}"
-    mode: 0775
-  loop:
-    - "{{ pgpool_build_directory }}"
-    - "{{ pgpool_root_directory }}"
-    - "{{ pgpool_logdir }}"
-
-- name: Extract archive
-  unarchive:
-    src: "{{ pgpool_archive.dest }}"
-    dest: "{{ pgpool_build_directory }}"
-    remote_src: yes
-    extra_opts: 
-      - --strip-components=1
-
-- name: Build pgpool
-  shell:
-    cmd: |
-      ./configure {{ pgpool_build_opts }}
-      make -j{{ ansible_processor_cores }} >/dev/null 2>&1
-      make install
-    chdir: "{{ pgpool_build_directory }}"
-
 - name: Get pgpool-related binaries
   find:
-    path: /usr/local/bin
+    path: "{{ pgpool_binaries_directory }}"
     patterns: ['pcp_*', 'watchdog_*', 'pg_*']
   register: pg_binaries
 
@@ -71,13 +47,14 @@
     mode: 0777
   loop: "{{ pg_binaries.files }}"
 
-- name: Update config files' permissions
+- name: Update pgpool user's file permissions
   file:
-    path: "{{ pgpool_root_directory }}/etc"
+    path: "{{ pgpool_home_directory }}"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
+    recurse: yes
 
-- name: Create socket directories
+- name: Create socket/log directories
   file:
     path: "{{ item }}"
     state: directory
@@ -88,27 +65,54 @@
     - "{{ pgpool_socket_dir }}"
     - "{{ pgpool_pcp_socket_dir }}"
     - "{{ pgpool_wd_ipc_socket_dir }}"
+    - "{{ pgpool_logdir }}"
 
 - name: Upload pgpool.conf
   template:
     src: pgpool.conf.j2
-    dest: "{{ pgpool_root_directory }}/etc/pgpool.conf"
+    dest: "{{ pgpool_home_directory }}/pgpool.conf"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
     mode: 0775
 
 - name: Upload pcp.conf
+  shell:
+    cmd: echo "pgpool:$(pg_md5 {{ pgpool_password_cleartext }})" > {{ pgpool_home_directory }}/pcp.conf
+  become: yes
+  become_user: "{{ pgpool_user }}"
+
+- name: Upload .pcppass file
   template:
-    src: pcp.conf.j2
-    dest: "{{ pgpool_root_directory }}/etc/pcp.conf"
+    src: pcppass.j2
+    dest: "{{ pgpool_home_directory }}/.pcppass"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
-    mode: 0775
+    mode: 0600
+  tags: ['pcppass']
+
+- name: Copy .bashrc
+  copy:
+    src: /etc/skel/.bashrc
+    dest: "{{ pgpool_home_directory }}/.bashrc"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0600
+    remote_src: yes
+  tags: ['aliases']
+
+- name: Upload .bash_aliases file
+  template:
+    src: bash_aliases.j2
+    dest: "{{ pgpool_home_directory }}/.bash_aliases"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0600
+  tags: ['aliases']
 
 - name: Generate pool_passwd file using md5 auth method
   shell:
     cmd: |
-      /usr/local/bin/pg_md5 --md5auth --username={{ item.username }} {{ item.password }}
+      pg_md5 --md5auth --username={{ item.username }} {{ item.password }}
   loop: "{{ pgpool_passwd_users_md5 }}"
   when: pgpool_passwd_use_md5 | bool
   become_user: "{{ pgpool_user }}"
@@ -118,3 +122,9 @@
   template:
     src: pgpool.logrotate.j2
     dest: /etc/logrotate.d/pgpool
+
+- name: Update rsyslog configuration
+  template:
+    src: rsyslog.pgpool.conf.j2
+    dest: /etc/rsyslog.d/pgpool.conf
+  notify: restart rsyslog
