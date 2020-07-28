@@ -5,6 +5,9 @@ pgpool_apt_key_id: "ACCC4CF8"
 pgpool_apt_key_url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
 pgpool_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
 pgpool_apt_pin_priority: 500
+pgpool_apt_dependencies:
+  - postgresql-client-11
+  - postgresql-client-common
 
 # source installation settings
 pgpool_build_sources: no

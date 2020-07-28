@@ -32,6 +32,11 @@
     cache_valid_time: 3600
   register: pgpool_install
 
+- name: PgPool | Install dependencies | apt
+  apt:
+    name: "{{ pgpool_apt_dependencies }}"
+    state: present
+
 - name: PgPool | Shutdown systemd-based instance upon first installation
   service:
     name: pgpool2
