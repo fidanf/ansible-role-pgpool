@@ -6,10 +6,11 @@
     ansible_python_interpreter: /usr/bin/python3
     role_path: "{{ lookup('env', 'ROLE_PATH') }}"
   pre_tasks:
-    - name: Install python dependencies
+    - name: Install dependencies
       apt: 
         name: 
           - python3-apt
+          - vim
         update_cache: yes
     - name: Use python3 by default
       alternatives: 
