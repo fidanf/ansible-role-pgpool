@@ -44,7 +44,15 @@ pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'show pool_
 (3 rows)
 ```
 
+Feel free to create a .pgpass file for pgpool user in order to skip repetitive password prompts
+
 More details at : https://www.pgpool.net/docs/latest/en/html/sql-commands.html 
+
+:warning: If for any reason PgPool's internal status is no longer in sync with Postgresql Replication' status, issue the following commands :
+```bash
+rm -f /var/log/pgpool/pgpool_status
+sudo systemctl restart pgpool2
+```
 
 PCP commands
 ------------
