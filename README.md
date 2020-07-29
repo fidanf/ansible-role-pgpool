@@ -47,11 +47,11 @@ pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'show pool_
 More details at : https://www.pgpool.net/docs/latest/en/html/sql-commands.html 
 
 PCP commands
-------------------------------
+------------
 
-Get pgpool status using backend node ID
+Get pgpool status of backend node ID 0 
 ```bash
-pgpool@pgpool01:~$ pcp_node_info -h 127.0.0.1 -U pgpool -p 9898 --verbose 0
+pgpool@pgpool01:~$ pcp_node_info -h 127.0.0.1 -U pgpool -w -v 0
 Password:
 Hostname               : pgsql01
 Port                   : 5432
@@ -65,9 +65,9 @@ Replication Sync State :
 Last Status Change     : 2020-07-27 14:50:55
 ```
 
-Example output with standby node
+Same thing against standby node
 ```bash
-pgpool@pgpool01:~$ pcp_node_info -h 127.0.0.1 -U pgpool -p 9898 --verbose 1
+pgpool@pgpool01:~$ pcp_node_info -h 127.0.0.1 -U pgpool -w -v 1
 Password:
 Hostname               : pgsql02
 Port                   : 5432
@@ -83,12 +83,17 @@ Last Status Change     : 2020-07-27 14:50:55
 
 Attach pgpool node and give it and ID
 ```bash
-pgpool@pgpool01:~$ pcp_attach_node -h 127.0.0.1 -U pgpool -p 9898 -n 1
+pgpool@pgpool01:~$ pcp_attach_node -h 127.0.0.1 -U pgpool -w -n 3
+```
+
+Display the parameter values as defined in pgpool.conf
+```bash
+pgpool@pgpool01:~$ pcp_pool_status -h /var/run/pcp/ -U pgpool -w
 ```
 
 More details at : https://www.pgpool.net/docs/latest/en/html/pcp-commands.html 
 
 License
-----------
+-------
 
 MIT / BSD
