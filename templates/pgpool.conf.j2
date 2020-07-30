@@ -92,7 +92,7 @@ backend_application_name{{ loop.index0 }} = '{{ server.application_name }}'
 
 # - Authentication -
 
-enable_pool_hba = {{ pgpool_enable_pool_hba }}
+enable_pool_hba = {{ pgpool_enable_pool_hba | ternary('on', 'off') }}
                                    # Use pool_hba.conf for client authentication
 pool_passwd = '{{ pgpool_pool_passwd }}'
                                    # File name of pool_passwd for md5 authentication.

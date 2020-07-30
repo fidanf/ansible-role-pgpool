@@ -47,6 +47,14 @@
             data_directory: /var/lib/postgresql/11/main
             flag: ALLOW_TO_FAILOVER
             application_name: pgsql03
+        # authentication 
+        pgpool_enable_pool_hba: on
+        pool_hba_entries:
+          - type: host
+            database: all
+            user: admin
+            address: 192.168.0.0/16
+            method: trust
         # logs
         pgpool_log_statement: 'on'
         pgpool_log_per_node_statement: 'on'
@@ -55,4 +63,4 @@
         pgpool_statement_level_load_balance: 'on'
         # running mode
         pgpool_sr_check_user: repmgr
-        pgpool_sr_check_database: repmgr 
+        pgpool_sr_check_database: repmgr

@@ -78,8 +78,15 @@ pgpool_backend_servers:
     flag: ALLOW_TO_FAILOVER
     application_name: server0
 
-# Authentication 
-pgpool_enable_pool_hba: 'off'
+# Authentication
+pgpool_enable_pool_hba: off
+pool_hba_entries: []
+# pool_hba_entries:
+#   - type: host
+#     database: all
+#     user: admin
+#     address: 192.168.0.0/16
+#     method: trust
 pgpool_pool_passwd: pool_passwd
 pgpool_authentication_timeout: 60
 pgpool_allow_clear_text_frontend_auth: 'on'

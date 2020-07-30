@@ -91,6 +91,17 @@
     group: "{{ pgpool_group }}"
     mode: 0775
 
+- name: Upload pool_hba.conf
+  template:
+    src: pool_hba.conf.j2
+    dest: "{{ pgpool_home_directory }}/pool_hba.conf"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+  when: 
+    - pgpool_enable_pool_hba | bool 
+    - pool_hba_entries | length > 0
+
 - name: Upload pcp.conf
   shell:
     cmd: echo "pgpool:$(pg_md5 {{ pgpool_password_cleartext }})" > {{ pgpool_home_directory }}/pcp.conf
