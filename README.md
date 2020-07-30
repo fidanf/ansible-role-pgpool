@@ -50,8 +50,9 @@ More details at : https://www.pgpool.net/docs/latest/en/html/sql-commands.html
 
 :warning: If for any reason PgPool's internal status is no longer in sync with Postgresql Replication' status, issue the following commands :
 ```bash
-rm -f /var/log/pgpool/pgpool_status
-sudo systemctl restart pgpool2
+root@pgpool01:~$ systemctl stop pgool2
+root@pgpool01:~$ rm -f /var/log/pgpool/pgpool_status
+root@pgpool01:~$ sudo systemctl restart pgpool2
 ```
 
 PCP commands
