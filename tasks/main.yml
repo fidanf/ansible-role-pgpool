@@ -22,6 +22,12 @@
     name: "{{ pgpool_group }}"
     state: present
 
+- name: Ensure the user postgres is added the pgpool group
+  user:
+    name: postgres
+    groups: "{{ pgpool_group }}"
+    append: yes
+
 - name: Hash pgpool_password_cleartext
   set_fact: 
     pgpool_password_hashed: "{{ pgpool_password_cleartext | password_hash('sha512') }}"
