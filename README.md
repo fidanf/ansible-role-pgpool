@@ -52,7 +52,7 @@ More details at : https://www.pgpool.net/docs/latest/en/html/sql-commands.html
 ```bash
 root@pgpool01:~$ systemctl stop pgool2
 root@pgpool01:~$ rm -f /var/log/pgpool/pgpool_status
-root@pgpool01:~$ sudo systemctl restart pgpool2
+root@pgpool01:~$ systemctl restart pgpool2
 ```
 
 PCP commands
