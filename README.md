@@ -96,7 +96,7 @@ pgpool@pgpool01:~$ pcp_attach_node -h 127.0.0.1 -U pgpool -w -n 3
 
 Display the parameter values as defined in pgpool.conf
 ```bash
-pgpool@pgpool01:~$ pcp_pool_status -h /var/run/pcp/ -U pgpool -w
+pgpool@pgpool01:~$ pcp_pool_status -h /var/run/pcp -U pgpool -w
 ```
 
 More details at : https://www.pgpool.net/docs/latest/en/html/pcp-commands.html 
