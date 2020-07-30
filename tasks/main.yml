@@ -60,6 +60,11 @@
     group: "{{ pgpool_group }}"
     recurse: yes
 
+- name: Allow passwordless restarts with pgpool user
+  template:
+    src: "sudoers.pgpool.j2"
+    dest: "/etc/sudoers.d/{{ pgpool_user }}"
+
 - name: Create socket/log directories
   file:
     path: "{{ item }}"
