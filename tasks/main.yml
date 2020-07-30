@@ -78,6 +78,11 @@
     - "{{ pgpool_wd_ipc_socket_dir }}"
     - "{{ pgpool_logdir }}"
 
+- name: Create initial pgpool logfile
+  file:
+    path: "{{ pgpool_logdir }}/pgpool.log"
+    mode: 0644
+
 - name: Upload pgpool.conf
   template:
     src: pgpool.conf.j2
