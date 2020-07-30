@@ -45,6 +45,10 @@ pgpool_pcppass_entries:
     port: 9898
     user: pgpool
     password: pgpool
+  - hostname: 127.0.0.1
+    port: 9898
+    user: pgpool
+    password: pgpool
 
 # pool_passwd file
 pgpool_passwd_use_md5: yes
