@@ -51,7 +51,7 @@
           - type: host
             database: all
             user: admin
-            address: 192.168.0.0/16
+            address: 192.168.56.0/24
             method: trust
         # logs
         pgpool_log_statement: 'on'
