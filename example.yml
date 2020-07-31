@@ -54,11 +54,26 @@
             address: 192.168.56.0/24
             method: trust
         # logs
+        pgpool_log_hostname: 'on'
         pgpool_log_statement: 'on'
         pgpool_log_per_node_statement: 'on'
+        pgpool_log_min_messages: info
         # load-balancing
         pgpool_load_balance_mode: 'on'
         pgpool_statement_level_load_balance: 'on'
         # running mode
         pgpool_sr_check_user: repmgr
         pgpool_sr_check_database: repmgr
+        # HEALTH CHECK GLOBAL PARAMETERS
+        pgpool_health_check_period: 10
+        pgpool_health_check_timeout: 20
+        pgpool_health_check_user: repmgr
+        pgpool_health_check_database: repmgr
+        pgpool_health_check_max_retries: 3
+        pgpool_health_check_retry_delay: 10
+        pgpool_connect_timeout: 10000
+        # FAILOVER AND FAILBACK
+        pgpool_failover_command: "{{ pgpool_home_directory }}/failover.sh %d %h %p %D %m %H %M %P %r %R"
+        pgpool_failover_on_backend_error: 'off'
+        pgpool_auto_failback: 'on'
+        # TODO : follow_master_command

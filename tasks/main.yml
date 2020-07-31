@@ -156,3 +156,13 @@
     src: rsyslog.pgpool.conf.j2
     dest: /etc/rsyslog.d/pgpool.conf
   notify: restart rsyslog
+
+- name: Copy failover script
+  template:
+    src: scripts/failover.repmgr.sh.j2
+    dest: "{{ pgpool_home_directory }}/failover.sh"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+  when: pgpool_failover_command is defined and pgpool_failover_command
+  tags: ['failover']
