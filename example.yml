@@ -23,8 +23,6 @@
       vars:
         # pool_passwd
         pgpool_passwd_users_md5: 
-          - username: pgpool
-            password: pgpool
           - username: admin
             password: secret
         # backend settings
@@ -49,7 +47,7 @@
             application_name: pgsql03
         # authentication 
         pgpool_enable_pool_hba: on
-        pool_hba_entries:
+        pgpool_pool_hba_entries:
           - type: host
             database: all
             user: admin

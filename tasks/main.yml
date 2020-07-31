@@ -100,7 +100,7 @@
     mode: 0775
   when: 
     - pgpool_enable_pool_hba | bool 
-    - pool_hba_entries | length > 0
+    - pgpool_pool_hba_entries | length > 0
 
 - name: Upload pcp.conf
   shell:

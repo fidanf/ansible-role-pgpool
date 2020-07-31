@@ -80,8 +80,8 @@ pgpool_backend_servers:
 
 # Authentication
 pgpool_enable_pool_hba: off
-pool_hba_entries: []
-# pool_hba_entries:
+pgpool_pool_hba_entries: []
+# pgpool_pool_hba_entries:
 #   - type: host
 #     database: all
 #     user: admin
