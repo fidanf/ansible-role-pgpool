@@ -68,7 +68,7 @@ host    all         all         127.0.0.1/32          trust
 host    all         all         ::1/128               trust
 
 # User custom
-{% for connection in pool_hba_entries %}
+{% for connection in pgpool_pool_hba_entries %}
 {% if connection.comment is defined %}
 # {{connection.comment}}
 {% endif %}
