@@ -82,6 +82,7 @@
   file:
     path: "{{ pgpool_logdir }}/pgpool.log"
     mode: 0644
+    state: touch
 
 - name: Upload pgpool.conf
   template:
