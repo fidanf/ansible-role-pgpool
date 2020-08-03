@@ -1,10 +1,9 @@
-#!/bin/bash -eux
+#!/bin/bash
 
 LOGFILE=/var/log/pgpool/pgpool.log
 if [ ! -f $LOGFILE ] ; then
  > $LOGFILE
 fi
-PGVER=${PGVER:-11}
 echo $@
 
 # Special values:
