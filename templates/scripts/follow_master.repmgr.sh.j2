@@ -34,30 +34,46 @@ OLD_PRIMARY_NODE_ID="$8"
 NEW_MASTER_NODE_PORT="$9"
 NEW_MASTER_NODE_PGDATA="${10}"
 
-PGHOME=/usr/lib/postgresql/11
-PGVERSION=$PGHOME/bin/initdb -V | awk '{print $3}' | sed 's/\..*//' | sed 's/\([0-9]*\)[a-zA-Z].*/\1/'
-ARCHIVEDIR=/var/lib/pgsql/archivedir
-REPLUSER=repmgr
+# SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+# PGVERSION=/usr/lib/postgresql/11/bin/initdb -V | awk '{print $3}' | sed 's/\..*//' | sed 's/\([0-9]*\)[a-zA-Z].*/\1/'
+PGVERSION=11
+REPMGR_USER=repmgr
+REPMGR_DB=repmgr
 PCP_USER=pgpool
-PGPOOL_PATH=/usr/bin
 PCP_PORT=9898
+PGPOOL_PATH=/usr/bin
 
 (
-echo "checking passwordless psql command on repmgr database"
-psql -h ${NEW_MASTER_NODE_HOST} -U repmgr -d repmgr -w -c '\dt'
-if [ $? -eq 0 ] ; then
-    echo "Could not run psql command. Ensure .pgpass exists with correct permissions."
+echo "Executing script as user $(whoami)"
+date
+echo "FAILED_NODE_ID: "$FAILED_NODE_ID"
+echo "FAILED_NODE_HOST: "$FAILED_NODE_HOST"
+echo "FAILED_NODE_PORT: "$FAILED_NODE_PORT"
+echo "FAILED_NODE_PGDATA: "$FAILED_NODE_PGDATA"
+echo "NEW_MASTER_NODE_ID: "$NEW_MASTER_NODE_ID"
+echo "NEW_MASTER_NODE_HOST: "$NEW_MASTER_NODE_HOST"
+echo "OLD_MASTER_NODE_ID: "$OLD_MASTER_NODE_ID"
+echo "OLD_PRIMARY_NODE_ID: "$OLD_PRIMARY_NODE_ID"
+echo "NEW_MASTER_NODE_PORT: "$NEW_MASTER_NODE_PORT"
+echo "NEW_MASTER_NODE_PGDATA: "$NEW_MASTER_NODE_PGDATA"
+
+set -x
+
+echo "follow_master.sh: checking passwordless psql commands against repmgr database"
+psql -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c '\dt'
+if [ $? -ne 0 ] ; then
+    echo "follow_master.sh: Could not run psql command. Ensure .pgpass exists with correct permissions."
     exit 1;
 fi
 
 ## Check the status of Standby
 echo "follow_master.sh: start: Standby node ${FAILED_NODE_ID}"
-ssh ${FAILED_NODE_HOST} pg_ctlcluster 11 main status
+ssh ${FAILED_NODE_HOST} pg_ctlcluster ${PGVERSION} main status
 
 ## If Standby is running, synchronize it with the new Primary.
 if [ $? -eq 0 ] ; then
     ## Retrieving Repmgr's node ID based on PgPool backend info
-    REPMGR_NODE_ID=$(psql -t -h ${NEW_MASTER_NODE_HOST} -U repmgr -d repmgr -w -c "select node_id from nodes where node_name='${NEW_MASTER_NODE_HOST}'" | sed 's/^ *//;s/ *$//')
+    REPMGR_NODE_ID=$(psql -t -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c "select node_id from nodes where node_name='${NEW_MASTER_NODE_HOST}'" | sed 's/^ *//;s/ *$//')
     echo "follow_master.sh: Running repmgr standby follow on repmgr node ID ${REPMGR_NODE_ID}"
     ssh ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
 
