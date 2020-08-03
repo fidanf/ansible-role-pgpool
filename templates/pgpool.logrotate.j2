@@ -1,11 +1,11 @@
 {{ pgpool_logdir }}/*.log {
-			monthly
-			size 10M
-			rotate 12
-			compress
-			delaycompress
-			missingok
-			notifempty
-			create 644 {{ pgpool_user }} {{ pgpool_group }} 
-			su {{ pgpool_user }} {{ pgpool_group }} 
+	monthly
+	size 10M
+	rotate 12
+	compress
+	delaycompress
+	missingok
+	notifempty
+	create 644 {{ pgpool_user }} {{ pgpool_group }} 
+	su {{ pgpool_user }} {{ pgpool_group }} 
 }
