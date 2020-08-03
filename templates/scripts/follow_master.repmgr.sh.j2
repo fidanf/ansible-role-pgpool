@@ -1,0 +1,71 @@
+#!/bin/bash
+# This script is run after failover_command to synchronize the Standby with the new Primary.
+# First try pg_rewind. If pg_rewind failed, use pg_basebackup.
+
+LOGFILE=/var/log/pgpool/pgpool.log
+if [ ! -f $LOGFILE ] ; then
+ > $LOGFILE
+fi
+echo $@
+
+# Special values:
+#   %d = failed node id
+#   %h = failed node hostname
+#   %p = failed node port number
+#   %D = failed node database cluster path
+#   %m = new master node id
+#   %H = new master node hostname
+#   %M = old master node id
+#   %P = old primary node id
+#   %r = new master port number
+#   %R = new master database cluster path
+#   %N = old primary node hostname
+#   %S = old primary node port number
+#   %% = '%' character
+
+FAILED_NODE_ID="$1"
+FAILED_NODE_HOST="$2"
+FAILED_NODE_PORT="$3"
+FAILED_NODE_PGDATA="$4"
+NEW_MASTER_NODE_ID="$5"
+NEW_MASTER_NODE_HOST="$6"
+OLD_MASTER_NODE_ID="$7"
+OLD_PRIMARY_NODE_ID="$8"
+NEW_MASTER_NODE_PORT="$9"
+NEW_MASTER_NODE_PGDATA="${10}"
+
+PGHOME=/usr/lib/postgresql/11
+PGVERSION=$PGHOME/bin/initdb -V | awk '{print $3}' | sed 's/\..*//' | sed 's/\([0-9]*\)[a-zA-Z].*/\1/'
+ARCHIVEDIR=/var/lib/pgsql/archivedir
+REPLUSER=repmgr
+PCP_USER=pgpool
+PGPOOL_PATH=/usr/bin
+PCP_PORT=9898
+
+(
+echo "checking passwordless psql command on repmgr database"
+psql -h ${NEW_MASTER_NODE_HOST} -U repmgr -d repmgr -w -c '\dt'
+if [ $? -eq 0 ] ; then
+    echo "Could not run psql command. Ensure .pgpass exists with correct permissions."
+    exit 1;
+fi
+
+## Check the status of Standby
+echo "follow_master.sh: start: Standby node ${FAILED_NODE_ID}"
+ssh ${FAILED_NODE_HOST} pg_ctlcluster 11 main status
+
+## If Standby is running, synchronize it with the new Primary.
+if [ $? -eq 0 ] ; then
+    ## Retrieving Repmgr's node ID based on PgPool backend info
+    REPMGR_NODE_ID=$(psql -t -h ${NEW_MASTER_NODE_HOST} -U repmgr -d repmgr -w -c "select node_id from nodes where node_name='${NEW_MASTER_NODE_HOST}'" | sed 's/^ *//;s/ *$//')
+    echo "follow_master.sh: Running repmgr standby follow on repmgr node ID ${REPMGR_NODE_ID}"
+    ssh ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
+
+else
+    echo "follow_master.sh: failed_node_id=${FAILED_NODE_ID} is not running. skipping follow master command"
+    exit 0
+fi
+
+echo "follow_master.sh: end: follow master command complete"
+exit 0;
+) 2>&1 | tee -a ${LOGFILE}
