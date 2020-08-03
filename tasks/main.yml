@@ -81,7 +81,7 @@
 - name: Create initial pgpool logfile
   file:
     path: "{{ pgpool_logdir }}/pgpool.log"
-    mode: 0644
+    mode: 0775
     state: touch
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
