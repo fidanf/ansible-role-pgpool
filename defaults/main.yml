@@ -8,6 +8,9 @@ pgpool_apt_pin_priority: 500
 pgpool_apt_dependencies:
   - postgresql-client-11
   - postgresql-client-common
+pgpool_postgresql_service_user: postgres
+pgpool_postgresql_service_group: postgres
+pgpool_postgresql_home_directory: /var/lib/postgresql
 
 # source installation settings
 pgpool_build_sources: no
@@ -34,6 +37,15 @@ pgpool_binaries_directory: "{{ '/usr/sbin/' if pgpool_apt_install else '/usr/loc
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password_cleartext: pgpool
+
+# .pgpass file
+pgpool_pgpass_entries: []
+# pgpool_pgpass_entries:
+#   - hostname: server01
+#     port: 5432
+#     database: repmgr
+#     user: repmgr
+#     password: repmgr
 
 # .pcpass file
 pgpool_pcppass_entries: 
@@ -169,7 +181,8 @@ pgpool_sr_check_password: ''
 pgpool_sr_check_database: ''
 pgpool_delay_threshold: 10000000
 # Special commands
-pgpool_follow_master_command: ''
+pgpool_follow_master_template: scripts/follow_master.repmgr.sh.j2
+pgpool_follow_master_command: 
 
 # HEALTH CHECK GLOBAL PARAMETERS
 pgpool_health_check_period: 0
@@ -185,6 +198,7 @@ pgpool_connect_timeout: 10000
 # TODO
 
 # FAILOVER AND FAILBACK
+pgpool_failover_template: scripts/failover.repmgr.sh.j2
 pgpool_failover_command: ''
 pgpool_failback_command: ''
 pgpool_failover_on_backend_error: 'on'

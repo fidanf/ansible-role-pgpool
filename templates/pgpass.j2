@@ -1,0 +1,3 @@
+{% for server in pgpool_pgpass_entries %}
+{{ server.hostname }}:{{ server.port }}:{{ server.database }}:{{ server.user }}:{{ server.password }}
+{% endfor %}
