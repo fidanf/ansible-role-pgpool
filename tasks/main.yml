@@ -83,6 +83,8 @@
     path: "{{ pgpool_logdir }}/pgpool.log"
     mode: 0644
     state: touch
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
 
 - name: Upload pgpool.conf
   template:
@@ -117,6 +119,17 @@
     group: "{{ pgpool_group }}"
     mode: 0600
   tags: ['pcppass']
+
+- name: Upload .pgpass file for postgres user
+  template:
+    src: pgpass.j2
+    dest: "{{ pgpool_postgresql_home_directory }}/.pgpass"
+    owner: "{{ pgpool_postgresql_service_user }}"
+    group: "{{ pgpool_postgresql_service_group }}"
+    mode: 0600
+    trim_blocks: no
+  when: pgpool_pgpass_entries | length > 0
+  tags: ['pgpass']
 
 - name: Copy .bashrc
   copy:
@@ -159,10 +172,20 @@
 
 - name: Copy failover script
   template:
-    src: scripts/failover.repmgr.sh.j2
+    src: "{{ pgpool_failover_template }}"
     dest: "{{ pgpool_home_directory }}/failover.sh"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
     mode: 0775
   when: pgpool_failover_command is defined and pgpool_failover_command
   tags: ['failover']
+
+- name: Copy follow_master script
+  template:
+    src: "{{ pgpool_follow_master_template }}"
+    dest: "{{ pgpool_home_directory }}/follow_master.sh"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
+  when: pgpool_follow_master_command is defined and pgpool_follow_master_command
+  tags: ['follow']
