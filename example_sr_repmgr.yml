@@ -21,23 +21,28 @@
   roles:
     - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-pgpool' }}"
       vars:
-        # pgpass 
-        pgpool_pgpass_entries:
+        # .pcpass file
+        pgpool_pcppass_entries: 
           - hostname: pgsql01
-            port: 5432
-            database: repmgr
-            user: repmgr
-            password: repmgr
+            port: 9898
+            user: pgpool
+            password: pgpool
           - hostname: pgsql02
-            port: 5432
-            database: repmgr
-            user: repmgr
-            password: repmgr
+            port: 9898
+            user: pgpool
+            password: pgpool
           - hostname: pgsql03
-            port: 5432
-            database: repmgr
-            user: repmgr
-            password: repmgr
+            port: 9898
+            user: pgpool
+            password: pgpool
+          - hostname: "{{ pgpool_pcp_socket_dir }}" # allows using -h /var/run/pcp instead of 'localhost' 
+            port: 9898
+            user: pgpool
+            password: pgpool
+          - hostname: 127.0.0.1
+            port: 9898
+            user: pgpool
+            password: pgpool
         # pool_passwd
         pgpool_passwd_users_md5: 
           - username: admin
