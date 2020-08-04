@@ -35,7 +35,7 @@ pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'PGPOOL SHO
 
 Show pool status
 ```bash
-pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'show pool_nodes'
+pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'SHOW POOL_NODES'
  node_id | hostname | port | status | lb_weight |  role   | select_cnt | load_balance_node | replication_delay | replication_state | replication_sync_state | last_status_change
 ---------+----------+------+--------+-----------+---------+------------+-------------------+-------------------+-------------------+------------------------+---------------------
  0       | pgsql01  | 5432 | up     | 0.333333  | primary | 30         | true              | 0                 |                   |                        | 2020-07-27 14:50:55
@@ -50,9 +50,7 @@ More details at : https://www.pgpool.net/docs/latest/en/html/sql-commands.html
 
 :warning: If for any reason PgPool's internal status is no longer in sync with Postgresql Replication' status, issue the following commands :
 ```bash
-root@pgpool01:~$ systemctl stop pgool2
-root@pgpool01:~$ rm -f /var/log/pgpool/pgpool_status
-root@pgpool01:~$ systemctl restart pgpool2
+pgpool@pgpool01:~$ sudo systemctl stop pgpool2 && rm -f /var/log/pgpool/pgpool_status && sudo systemctl restart pgpool2
 ```
 
 PCP commands
