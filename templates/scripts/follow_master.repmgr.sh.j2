@@ -34,8 +34,8 @@ OLD_PRIMARY_NODE_ID="$8"
 NEW_MASTER_NODE_PORT="$9"
 NEW_MASTER_NODE_PGDATA="${10}"
 
-# SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 # PGVERSION=/usr/lib/postgresql/11/bin/initdb -V | awk '{print $3}' | sed 's/\..*//' | sed 's/\([0-9]*\)[a-zA-Z].*/\1/'
+SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 PGVERSION=11
 REPMGR_USER=repmgr
 REPMGR_DB=repmgr
@@ -68,14 +68,14 @@ fi
 
 ## Check the status of Standby
 echo "follow_master.sh: start: Standby node ${FAILED_NODE_ID}"
-ssh ${FAILED_NODE_HOST} pg_ctlcluster ${PGVERSION} main status
+ssh ${SSH_ARGS} ${FAILED_NODE_HOST} pg_ctlcluster ${PGVERSION} main status
 
 ## If Standby is running, synchronize it with the new Primary.
 if [ $? -eq 0 ] ; then
     ## Retrieving Repmgr's node ID based on PgPool backend info
     REPMGR_NODE_ID=$(psql -t -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c "select node_id from nodes where node_name='${NEW_MASTER_NODE_HOST}'" | sed 's/^ *//;s/ *$//')
     echo "follow_master.sh: Running repmgr standby follow on repmgr node ID ${REPMGR_NODE_ID}"
-    ssh ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
+    ssh ${SSH_ARGS} ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
 
 else
     echo "follow_master.sh: failed_node_id=${FAILED_NODE_ID} is not running. skipping follow master command"

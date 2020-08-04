@@ -29,6 +29,8 @@ OLD_PRIMARY_ID=$8          # %P
 NEW_PORT=$9                # %r
 NEW_CLUSTER_PATH=$10       # %R
 
+SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
 # ex input : 0 pgsql01 5432 /var/lib/postgresql/11/main 1 pgsql02 0 0 5432 /var/lib/postgresql/11/main
 
 (
@@ -48,7 +50,7 @@ set -x
 
 if [ $FALLING_NODE = $OLD_PRIMARY_ID ] ; then
   echo "Promoting ${NEW_HOST} to primary"
-  ssh ${NEW_HOST} "/usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file -v"
+  ssh ${SSH_ARGS} ${NEW_HOST} "/usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file -v"
 else
   echo "old primary id is $OLD_PRIMARY_ID and falling node is $FALLING_NODE"
 fi
