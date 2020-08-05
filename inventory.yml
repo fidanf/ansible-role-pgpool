@@ -91,9 +91,10 @@ pgpool:
     pgpool_log_statement: 'on'
     pgpool_log_per_node_statement: 'on'
     pgpool_log_min_messages: info
+    # connection_cache
+    pgpool_connection_cache: 'on'
     # load-balancing
     pgpool_load_balance_mode: 'on'
-    pgpool_statement_level_load_balance: 'on'
     # running mode
     pgpool_sr_check_user: repmgr
     pgpool_sr_check_database: repmgr
