@@ -86,6 +86,13 @@
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
 
+- name: Populate service facts
+  service_facts:
+
+- name: Get pgpool2 service status
+  set_fact:
+    pgpool2_running: "{{ ansible_facts.services['pgpool2'].state == 'running' }}"
+
 - name: Upload pgpool.conf
   template:
     src: pgpool.conf.j2
@@ -93,6 +100,7 @@
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
     mode: 0775
+  notify: reload pgpool2
 
 - name: Upload pool_hba.conf
   template:

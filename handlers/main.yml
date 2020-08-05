@@ -3,3 +3,9 @@
   systemd:
     name: rsyslog
     state: restarted
+
+- name: reload pgpool2
+  systemd:
+    name: pgpool2
+    state: reloaded
+  when: pgpool2_running
