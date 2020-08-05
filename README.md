@@ -30,12 +30,12 @@ Configuration checking commands
 
 Show all configuration parameters
 ```bash
-pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'PGPOOL SHOW ALL' 
+pgpool@pgpool01:~$ psql -h 192.168.56.100 -p 9999 -U admin -d testdb -c 'PGPOOL SHOW ALL' 
 ```
 
 Show pool status
 ```bash
-pgpool@pgpool01:~$ psql -h localhost -p 9999 -U admin -d postgres -c 'SHOW POOL_NODES'
+pgpool@pgpool01:~$ psql -h 192.168.56.100 -p 9999 -U admin -d testdb -c 'SHOW POOL_NODES'
  node_id | hostname | port | status | lb_weight |  role   | select_cnt | load_balance_node | replication_delay | replication_state | replication_sync_state | last_status_change
 ---------+----------+------+--------+-----------+---------+------------+-------------------+-------------------+-------------------+------------------------+---------------------
  0       | pgsql01  | 5432 | up     | 0.333333  | primary | 30         | true              | 0                 |                   |                        | 2020-07-27 14:50:55
@@ -96,6 +96,11 @@ pgpool@pgpool01:~$ pcp_attach_node -h 127.0.0.1 -U pgpool -w -n 3
 Display the parameter values as defined in pgpool.conf
 ```bash
 pgpool@pgpool01:~$ pcp_pool_status -h /var/run/pcp -U pgpool -w
+```
+
+Show watchdog cluster status
+```bash
+pcp_watchdog_info -U pgpool -h /var/run/pcp -w -v
 ```
 
 More details at : https://www.pgpool.net/docs/latest/en/html/pcp-commands.html 
