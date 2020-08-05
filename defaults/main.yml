@@ -13,6 +13,7 @@ pgpool_postgresql_home_directory: /var/lib/postgresql
 pgpool_apt_dependencies:
   - postgresql-client-{{ pgpool_postgresql_version }}
   - postgresql-client-common
+  - arping
 
 # source installation settings
 pgpool_build_sources: no
@@ -26,6 +27,7 @@ pgpool_build_apt_dependencies:
   - postgresql-client
   - postgresql-client-common
   - postgresql-common
+  - arping
 pgpool_build_version: "4.1.2"
 pgpool_root_directory: /usr/local
 pgpool_build_directory: /usr/src/pgpool2
@@ -222,7 +224,7 @@ pgpool_client_idle_limit_in_recovery: 0
 pgpool_use_watchdog: 'off'
 # Connection to up stream servers
 pgpool_trusted_servers: ''
-ppgool_ping_path: /bin
+ppgool_ping_path: /usr/bin
 # Watchdog communication Settings
 pgpool_wd_hostname: ''
 pgpool_wd_port: 9000
@@ -231,9 +233,9 @@ pgpool_authkey: ''
 pgpool_wd_ipc_socket_dir: /var/run/watchdog
 # Virtual IP control Setting
 pgpool_delegate_IP: ''
-pgpool_if_cmd_path: /sbin
-pgpool_if_up_cmd: /usr/bin/sudo /sbin/ip addr add $_IP_$/24 dev eth0 label eth0:0
-pgpool_if_down_cmd: /usr/bin/sudo /sbin/ip addr del $_IP_$/24 dev eth0
+pgpool_if_cmd_path: /usr/sbin
+pgpool_if_up_cmd: /usr/bin/sudo /usr/sbin/ip addr add $_IP_$/24 dev eth0 label eth0:0
+pgpool_if_down_cmd: /usr/bin/sudo /usr/sbin/ip addr del $_IP_$/24 dev eth0
 pgpool_arping_path: /usr/sbin
 pgpool_arping_cmd: /usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth0
 # Behavior on escalation Setting 
