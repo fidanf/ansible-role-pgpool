@@ -5,3 +5,5 @@ Defaults:{{ pgpool_user }} !requiretty
   /usr/bin/systemctl status pgpool2, \
   /usr/bin/systemctl reload pgpool2, \
   /usr/bin/systemctl restart pgpool2
+
+%{{ pgpool_group }} ALL = NOPASSWD: /sbin/ip, /usr/sbin/arping
