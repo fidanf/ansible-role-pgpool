@@ -698,9 +698,9 @@ wd_heartbeat_deadtime = {{ pgpool_wd_heartbeat_deadtime }}
 
 {% if pgpool_heartbeat_destination | length > 0 %}
 {% for server in pgpool_heartbeat_destination %}
-heartbeat_destination{{ loop.index0 }} = '{{ server.hostname }}'
-heartbeat_destination_port{{ loop.index0 }} = '{{ server.port }}'
-heartbeat_device{{ loop.index0 }} = '{{ server.device }}'
+heartbeat_destination{{ loop.index0 }} = '{{ server.hostname | mandatory }}'
+heartbeat_destination_port{{ loop.index0 }} = '{{ server.port | default(pgpool_wd_heartbeat_port) }}'
+heartbeat_device{{ loop.index0 }} = '{{ server.device | default('') }}'
 {% endfor %}
 {% endif %}
 
@@ -746,9 +746,9 @@ wd_lifecheck_password = '{{ pgpool_wd_lifecheck_password }}'
 
 {% if pgpool_other_settings | length > 0 %}
 {% for server in pgpool_other_settings %}
-other_pgpool_hostname{{ loop.index0 }} = {{ server.hostname }}
-other_pgpool_port{{ loop.index0 }} = {{ server.port }}
-other_wd_port{{ loop.index0 }} = {{ server.wd_port }}
+other_pgpool_hostname{{ loop.index0 }} = {{ server.hostname | mandatory }}
+other_pgpool_port{{ loop.index0 }} = {{ server.port | default(pgpool_port) }}
+other_wd_port{{ loop.index0 }} = {{ server.wd_port | default(pgpool_wd_port) }}
 {% endfor %}
 {% endif %}
 
