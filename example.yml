@@ -2,9 +2,6 @@
 - hosts: pgpool
   gather_facts: yes
   become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
   pre_tasks:
     - name: Install dependencies
       apt: 
@@ -19,4 +16,4 @@
         name: python
         priority: 1
   roles:
-    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-pgpool' }}"
+    - name: ../ansible-role-pgpool
