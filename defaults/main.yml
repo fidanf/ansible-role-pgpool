@@ -268,9 +268,9 @@ pgpool_wd_lifecheck_password: ''
 # Other pgpool Connection Settings
 pgpool_other_settings: []
 # pgpool_other_settings: 
-#   - hostname: host0
-#     port: 5432
-#     wd_port: 
+#   - hostname: server0
+#     port: 9999
+#     wd_port: 9000
 
 # OTHERS
 pgpool_relcache_expire: 0
