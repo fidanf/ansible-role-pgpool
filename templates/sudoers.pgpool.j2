@@ -1,9 +1,9 @@
 # this is required when running sudo over ssh without -t:
 Defaults:{{ pgpool_user }} !requiretty
-{{ pgpool_user }} ALL = NOPASSWD: /usr/bin/systemctl start pgpool2, \
+%{{ pgpool_group }} ALL = NOPASSWD: /usr/bin/systemctl start pgpool2, \
   /usr/bin/systemctl stop pgpool2, \
   /usr/bin/systemctl status pgpool2, \
   /usr/bin/systemctl reload pgpool2, \
-  /usr/bin/systemctl restart pgpool2
-
-%{{ pgpool_group }} ALL = NOPASSWD: /usr/sbin/ip, /usr/sbin/arping
+  /usr/bin/systemctl restart pgpool2, \
+  /usr/sbin/ip, \
+  /usr/sbin/arping

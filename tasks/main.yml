@@ -17,6 +17,11 @@
     - not pgpool_apt_install | bool
     - pgpool_build_sources | bool
 
+- name: Generated hashed passwords for Ansible
+  set_fact: 
+    pgpool_password_hashed: "{{ pgpool_password_cleartext | password_hash('sha512') }}"
+    pgpool_postgres_password_hashed: "{{ pgpool_postgres_password_cleartext | password_hash('sha512') }}"
+
 - name: Create pgpool group
   group:
     name: "{{ pgpool_group }}"
@@ -27,10 +32,8 @@
     name: postgres
     groups: "{{ pgpool_group }}"
     append: yes
-
-- name: Hash pgpool_password_cleartext
-  set_fact: 
-    pgpool_password_hashed: "{{ pgpool_password_cleartext | password_hash('sha512') }}"
+    password: "{{ pgpool_postgres_password_hashed }}"
+    update_password: always
 
 - name: Create pgpool user
   user:
@@ -60,7 +63,7 @@
     group: "{{ pgpool_group }}"
     recurse: yes
 
-- name: Allow passwordless restarts with pgpool user
+- name: Add sudo privileges for pgpool group
   template:
     src: "sudoers.pgpool.j2"
     dest: "/etc/sudoers.d/{{ pgpool_user }}"

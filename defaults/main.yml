@@ -9,6 +9,7 @@ pgpool_postgresql_version: 11
 pgpool_postgresql_cluster_name: main
 pgpool_postgresql_service_user: postgres
 pgpool_postgresql_service_group: postgres
+pgpool_postgres_password_cleartext: postgres
 pgpool_postgresql_home_directory: /var/lib/postgresql
 pgpool_apt_dependencies:
   - postgresql-client-{{ pgpool_postgresql_version }}
