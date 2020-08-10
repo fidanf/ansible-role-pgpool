@@ -4,6 +4,7 @@ pgpool:
     pgpool01:
       ansible_host: 192.168.56.10
       pgpool_wd_hostname: pgsql01
+      pgpool_wd_priority: 1
       # watchdog
       pgpool_heartbeat_destination:
         - hostname: pgsql02
@@ -14,6 +15,7 @@ pgpool:
     pgpool02:
       ansible_host: 192.168.56.11
       pgpool_wd_hostname: pgsql02
+      pgpool_wd_priority: 2
       # watchdog
       pgpool_heartbeat_destination:
         - hostname: pgsql01
@@ -24,6 +26,7 @@ pgpool:
     pgpool03:
       ansible_host: 192.168.56.12
       pgpool_wd_hostname: pgsql03
+      pgpool_wd_priority: 3
       # watchdog
       pgpool_heartbeat_destination:
         - hostname: pgsql01
@@ -112,5 +115,8 @@ pgpool:
     pgpool_failover_on_backend_error: 'off'
     pgpool_auto_failback: 'on'
     # Watchdog
-    pgpool_delegate_IP: 192.168.56.100
+    pgpool_delegate_IP: 192.168.56.30
     pgpool_use_watchdog: 'on'
+    pgpool_if_up_cmd: /usr/bin/sudo /usr/sbin/ip addr add $_IP_$/24 dev eth1 label eth1:0
+    pgpool_if_down_cmd: /usr/bin/sudo /usr/sbin/ip addr del $_IP_$/24 dev eth1
+    pgpool_arping_cmd: /usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth1
