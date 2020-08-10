@@ -234,10 +234,10 @@ pgpool_authkey: ''
 pgpool_wd_ipc_socket_dir: /var/run/watchdog
 # Virtual IP control Setting
 pgpool_delegate_IP: ''
-pgpool_if_cmd_path: /usr/sbin
+pgpool_if_cmd_path: ''
 pgpool_if_up_cmd: /usr/bin/sudo /usr/sbin/ip addr add $_IP_$/24 dev eth0 label eth0:0
 pgpool_if_down_cmd: /usr/bin/sudo /usr/sbin/ip addr del $_IP_$/24 dev eth0
-pgpool_arping_path: /usr/sbin
+pgpool_arping_path: ''
 pgpool_arping_cmd: /usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth0
 # Behavior on escalation Setting 
 pgpool_clear_memqcache_on_escalation: 'on'
