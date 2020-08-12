@@ -35,6 +35,7 @@ pgpool:
         - hostname: pgsql01
         - hostname: pgsql02
   vars:
+    pgpool_postgresql_version: 12
     # .pcpass file
     pgpool_pcppass_entries: 
       - hostname: pgsql01
