@@ -34,9 +34,8 @@ OLD_PRIMARY_NODE_ID="$8"
 NEW_MASTER_NODE_PORT="$9"
 NEW_MASTER_NODE_PGDATA="${10}"
 
-# PGVERSION=/usr/lib/postgresql/11/bin/initdb -V | awk '{print $3}' | sed 's/\..*//' | sed 's/\([0-9]*\)[a-zA-Z].*/\1/'
 SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-PGVERSION=11
+PGVERSION={{ pgpool_postgresql_version }}
 REPMGR_USER=repmgr
 REPMGR_DB=repmgr
 PCP_USER=pgpool

@@ -30,6 +30,7 @@ NEW_PORT=$9                # %r
 NEW_CLUSTER_PATH=$10       # %R
 
 SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+PGVERSION={{ pgpool_postgresql_version }}
 
 # ex input : 0 pgsql01 5432 /var/lib/postgresql/11/main 1 pgsql02 0 0 5432 /var/lib/postgresql/11/main
 
