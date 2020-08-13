@@ -2,11 +2,6 @@
 # This script is run after failover_command to synchronize the Standby with the new Primary.
 # First try pg_rewind. If pg_rewind failed, use pg_basebackup.
 
-LOGFILE=/var/log/pgpool/pgpool.log
-if [ ! -f $LOGFILE ] ; then
- > $LOGFILE
-fi
-
 # Special values:
 #   %d = failed node id
 #   %h = failed node hostname
@@ -55,10 +50,8 @@ echo "OLD_PRIMARY_NODE_ID: "$OLD_PRIMARY_NODE_ID"
 echo "NEW_MASTER_NODE_PORT: "$NEW_MASTER_NODE_PORT"
 echo "NEW_MASTER_NODE_PGDATA: "$NEW_MASTER_NODE_PGDATA"
 
-set -x
-
 echo "follow_master.sh: checking passwordless psql commands against repmgr database"
-psql -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c '\dt' > /dev/null
+psql -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c '\dt' >/dev/null
 if [ $? -ne 0 ] ; then
     echo "follow_master.sh: Could not run psql command. Ensure .pgpass exists with correct permissions."
     exit 1;
@@ -74,7 +67,6 @@ if [ $? -eq 0 ] ; then
     REPMGR_NODE_ID=$(psql -t -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c "select node_id from nodes where node_name='${NEW_MASTER_NODE_HOST}'" | sed 's/^ *//;s/ *$//')
     echo "follow_master.sh: Running repmgr standby follow on repmgr node ID ${REPMGR_NODE_ID}"
     ssh ${SSH_ARGS} ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
-
 else
     echo "follow_master.sh: failed_node_id=${FAILED_NODE_ID} is not running. skipping follow master command"
     exit 0
@@ -82,4 +74,4 @@ fi
 
 echo "follow_master.sh: end: follow master command complete"
 exit 0;
-) 2>&1 | tee -a ${LOGFILE}
+) 2>&1 | tee -a {{ pgpool_logdir }}/pgpool.log
