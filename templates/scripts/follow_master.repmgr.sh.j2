@@ -6,7 +6,6 @@ LOGFILE=/var/log/pgpool/pgpool.log
 if [ ! -f $LOGFILE ] ; then
  > $LOGFILE
 fi
-echo $@
 
 # Special values:
 #   %d = failed node id
@@ -37,11 +36,10 @@ NEW_MASTER_NODE_PGDATA="${10}"
 SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 PGVERSION={{ pgpool_postgresql_version }}
 PGCLUSTER={{ pgpool_postgresql_cluster_name }}
-REPMGR_USER=repmgr
-REPMGR_DB=repmgr
-PCP_USER=pgpool
-PCP_PORT=9898
-PGPOOL_PATH=/usr/bin
+REPMGR_USER={{ pgpool_sr_check_user }}
+REPMGR_DB={{ pgpool_sr_check_database }}
+PCP_USER={{ pgpool_user }}
+PCP_PORT={{ pgpool_pcp_port}}
 
 (
 echo "Executing script as user $(whoami)"
@@ -60,7 +58,7 @@ echo "NEW_MASTER_NODE_PGDATA: "$NEW_MASTER_NODE_PGDATA"
 set -x
 
 echo "follow_master.sh: checking passwordless psql commands against repmgr database"
-psql -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c '\dt'
+psql -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c '\dt' > /dev/null
 if [ $? -ne 0 ] ; then
     echo "follow_master.sh: Could not run psql command. Ensure .pgpass exists with correct permissions."
     exit 1;
