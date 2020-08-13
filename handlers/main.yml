@@ -8,4 +8,5 @@
   systemd:
     name: pgpool2
     state: reloaded
+    daemon_reload: yes
   when: pgpool2_running

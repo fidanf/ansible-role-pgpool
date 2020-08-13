@@ -175,6 +175,13 @@
     src: pgpool.logrotate.j2
     dest: /etc/logrotate.d/pgpool
 
+- name: Update syslog facility
+  lineinfile:
+    path: /etc/systemd/system/multi-user.target.wants/pgpool2.service
+    regex: ^SyslogFacility=
+    line: SyslogFacility={{ pgpool_syslog_facility | lower }}
+  notify: reload pgpool2
+
 - name: Update rsyslog configuration
   template:
     src: rsyslog.pgpool.conf.j2
