@@ -95,6 +95,7 @@ pgpool:
     pgpool_log_statement: 'on'
     pgpool_log_per_node_statement: 'on'
     pgpool_log_min_messages: info
+    pgpool_syslog_facility: LOCAL1
     # connection_cache
     pgpool_connection_cache: 'on'
     # Pool
@@ -112,7 +113,7 @@ pgpool:
     # running mode
     pgpool_sr_check_user: repmgr
     pgpool_sr_check_database: repmgr
-    pgpool_follow_master_command: "{{ pgpool_home_directory }}/follow_master.sh %d %h %p %D %m %H %M %P %r %R"
+    pgpool_follow_master_command: "{{ pgpool_home_directory }}/follow_master.sh %d %h %p %D %m %H %M %P %r %R %N %S"
     # HEALTH CHECK GLOBAL PARAMETERS
     pgpool_health_check_period: 10
     pgpool_health_check_timeout: 20
@@ -122,7 +123,7 @@ pgpool:
     pgpool_health_check_retry_delay: 10
     pgpool_connect_timeout: 10000
     # FAILOVER AND FAILBACK
-    pgpool_failover_command: "{{ pgpool_home_directory }}/failover.sh %d %h %p %D %m %H %M %P %r %R"
+    pgpool_failover_command: "{{ pgpool_home_directory }}/failover.sh %d %h %p %D %m %H %M %P %r %R %N %S"
     pgpool_failover_on_backend_error: 'off'
     pgpool_auto_failback: 'on'
     # Watchdog
