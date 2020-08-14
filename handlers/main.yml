@@ -3,10 +3,10 @@
   systemd:
     name: rsyslog
     state: restarted
+    daemon_reload: yes
 
 - name: reload pgpool2
   systemd:
     name: pgpool2
     state: reloaded
-    daemon_reload: yes
   when: pgpool2_running
