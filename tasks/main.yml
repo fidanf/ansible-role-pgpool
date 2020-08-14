@@ -122,12 +122,21 @@
   become: yes
   become_user: "{{ pgpool_user }}"
 
-- name: Upload .pcppass file
+- name: Upload .pcppass file (pgpool)
   template:
     src: pcppass.j2
     dest: "{{ pgpool_home_directory }}/.pcppass"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
+    mode: 0600
+  tags: ['pcppass']
+
+- name: Upload .pcppass file (postgres)
+  template:
+    src: pcppass.j2
+    dest: "{{ pgpool_postgresql_home_directory }}/.pcppass"
+    owner: "{{ pgpool_postgresql_service_user }}"
+    group: "{{ pgpool_postgresql_service_group }}"
     mode: 0600
   tags: ['pcppass']
 
