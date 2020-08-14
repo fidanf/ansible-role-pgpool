@@ -16,6 +16,7 @@
 #   %N = old primary node hostname
 #   %S = old primary node port number
 #   %% = '%' character
+# ex input : 0 pgsql01 5432 /var/lib/postgresql/12/main 1 pgsql02 0 0 5432 /var/lib/postgresql/12/main pgsql01 5432
 
 FAILED_NODE_ID="$1"
 FAILED_NODE_HOST="$2"
@@ -27,14 +28,14 @@ OLD_MASTER_NODE_ID="$7"
 OLD_PRIMARY_NODE_ID="$8"
 NEW_MASTER_NODE_PORT="$9"
 NEW_MASTER_NODE_PGDATA="${10}"
+OLD_PRIMARY_NODE_HOST="${11}"
+OLD_PRIMARY_NODE_PORT="${12}"
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 PGVERSION={{ pgpool_postgresql_version }}
 PGCLUSTER={{ pgpool_postgresql_cluster_name }}
 REPMGR_USER={{ pgpool_sr_check_user }}
 REPMGR_DB={{ pgpool_sr_check_database }}
-PCP_USER={{ pgpool_user }}
-PCP_PORT={{ pgpool_pcp_port}}
 
 (
 echo "Executing script as user $(whoami)"
@@ -50,6 +51,8 @@ echo "OLD_PRIMARY_NODE_ID: "$OLD_PRIMARY_NODE_ID"
 echo "NEW_MASTER_NODE_PORT: "$NEW_MASTER_NODE_PORT"
 echo "NEW_MASTER_NODE_PGDATA: "$NEW_MASTER_NODE_PGDATA"
 
+echo follow_master.sh: start: Standby node ${FAILED_NODE_ID}
+
 echo "follow_master.sh: checking passwordless psql commands against repmgr database"
 psql -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c '\dt' >/dev/null
 if [ $? -ne 0 ] ; then
@@ -59,14 +62,14 @@ fi
 
 ## Check the status of Standby
 echo "follow_master.sh: start: Standby node ${FAILED_NODE_ID}"
-ssh ${SSH_ARGS} ${FAILED_NODE_HOST} pg_ctlcluster ${PGVERSION} ${PGCLUSTER} status
+ssh ${SSH_OPTS} ${FAILED_NODE_HOST} pg_ctlcluster ${PGVERSION} ${PGCLUSTER} status
 
 ## If Standby is running, synchronize it with the new Primary.
 if [ $? -eq 0 ] ; then
     ## Retrieving Repmgr's node ID based on PgPool backend info
     REPMGR_NODE_ID=$(psql -t -h ${NEW_MASTER_NODE_HOST} -U ${REPMGR_USER} -d ${REPMGR_DB} -w -c "select node_id from nodes where node_name='${NEW_MASTER_NODE_HOST}'" | sed 's/^ *//;s/ *$//')
     echo "follow_master.sh: Running repmgr standby follow on repmgr node ID ${REPMGR_NODE_ID}"
-    ssh ${SSH_ARGS} ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
+    ssh ${SSH_OPTS} ${FAILED_NODE_HOST} "/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=${REPMGR_NODE_ID}"
 else
     echo "follow_master.sh: failed_node_id=${FAILED_NODE_ID} is not running. skipping follow master command"
     exit 0
