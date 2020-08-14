@@ -25,7 +25,9 @@
 
 - name: PgPool | Install PgPool | apt
   apt:
-    name: pgpool2
+    name: 
+      - pgpool2
+      - postgresql-{{ pgpool_postgresql_version }}-pgpool2
     state: present
     update_cache: yes
     default_release: "{{ ansible_distribution_release + '-pgdg' }}"
