@@ -39,6 +39,15 @@
     name: "{{ pgpool_apt_dependencies }}"
     state: present
 
+- name: PgPool | Install extensions
+  postgresql_query:
+    db: template1
+    query: CREATE EXTENSION {{ item }}
+  loop: "{{ pgpool_extensions }}"
+  become: yes
+  become_user: "{{ pgpool_postgresql_service_user }}"
+  ignore_errors: yes # todo : execute only on the primary node using postgresql_info or else
+
 - name: PgPool | Shutdown systemd-based instance upon first installation
   service:
     name: pgpool2

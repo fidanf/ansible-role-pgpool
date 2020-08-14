@@ -43,6 +43,9 @@ pgpool_binaries_directory: "{{ '/usr/sbin/' if pgpool_apt_install else '/usr/loc
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password_cleartext: pgpool
+pgpool_extensions:
+  - pgpool_recovery
+  - pgpool_adm
 
 # .pgpass file
 pgpool_pgpass_entries: []
