@@ -67,19 +67,19 @@ pgpool:
       - hostname: pgsql01
         port: 5432
         weight: 1
-        data_directory: /var/lib/postgresql/11/main
+        data_directory: "{{ pgpool_postgresql_data_directory }}"
         flag: ALLOW_TO_FAILOVER
         application_name: pgsql01
       - hostname: pgsql02
         port: 5432
         weight: 1
-        data_directory: /var/lib/postgresql/11/main
+        data_directory: "{{ pgpool_postgresql_data_directory }}"
         flag: ALLOW_TO_FAILOVER
         application_name: pgsql02
       - hostname: pgsql03
         port: 5432
         weight: 1
-        data_directory: /var/lib/postgresql/11/main
+        data_directory: "{{ pgpool_postgresql_data_directory }}"
         flag: ALLOW_TO_FAILOVER
         application_name: pgsql03
     # authentication 
