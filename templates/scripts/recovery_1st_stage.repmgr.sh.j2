@@ -1,0 +1,38 @@
+#!/bin/bash
+# This script is executed by "recovery_1st_stage" to recovery a Standby node.
+
+set -o xtrace
+exec > >(logger -i -p {{ pgpool_syslog_facility | lower }}.info) 2>&1
+
+PRIMARY_NODE_PGDATA="$1" # Path to the database cluster of the master (primary) node.
+DEST_NODE_HOST="$2" # Hostname of the backend node to be recovered.
+DEST_NODE_PGDATA="$3" # Path to the database cluster of the node to be recovered.
+PRIMARY_NODE_PORT="$4" # Port number of the master (primary) node (Pgpool-II 3.4 or after).
+DEST_NODE_ID="$5" # Node number to be recovered (Pgpool-II 4.0 or after)
+DEST_NODE_PORT="$6" # Port number to be recovered (Pgpool-II 4.1 or after)
+
+PRIMARY_NODE_HOST=$(hostname) # This script is executed by the primary node so using $hostname should be sufficient here
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+PGVERSION={{ pgpool_postgresql_version }}
+PGCLUSTER={{ pgpool_postgresql_cluster_name }}
+REPMGR_USER={{ pgpool_sr_check_user }}
+REPMGR_DB={{ pgpool_sr_check_database }}
+
+## Test passwordless SSH
+ssh ${SSH_OPTS} ${DEST_NODE_HOST} ls /tmp > /dev/null
+if [ $? -ne 0 ]; then
+  echo "failover.sh: passwordless SSH to postgres@${NEW_MASTER_NODE_HOST} failed. Please setup passwordless SSH."
+  exit 1
+fi
+
+## Initiate repmgr node rejoin
+logger -i -p {{ pgpool_syslog_facility | lower }}.info recovery_1st_stage: start: repmgr node rejoin for Standby node ${DEST_NODE_ID} using force-rewind
+ssh ${SSH_OPTS} ${DEST_NODE_HOST} repmgr node rejoin -U ${REPMGR_USER} -d ${REPMGR_DB} -h ${PRIMARY_NODE_HOST} --force-rewind=/usr/lib/postgresql/${PGVERSION}/bin/pg_rewind
+
+if [ $? -ne 0 ]; then
+    logger -i -p {{ pgpool_syslog_facility | lower }}.info recovery_1st_stage: repmgr node rejoin failed. See logs for details.
+    exit 1
+  else
+    logger -i -p {{ pgpool_syslog_facility | lower }}.info recovery_1st_stage: end: recovery_1st_stage complete
+    exit 0
+fi

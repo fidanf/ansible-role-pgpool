@@ -132,3 +132,10 @@ pgpool:
     pgpool_if_up_cmd: /usr/bin/sudo /usr/sbin/ip addr add $_IP_$/24 dev eth1 label eth1:0
     pgpool_if_down_cmd: /usr/bin/sudo /usr/sbin/ip addr del $_IP_$/24 dev eth1
     pgpool_arping_cmd: /usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth1
+    # Online Recovery
+    pgpool_recovery_user: postgres
+    pgpool_recovery_password: ''
+    pgpool_recovery_1st_stage_command: recovery_1st_stage.sh
+    pgpool_recovery_2nd_stage_command: ''
+    pgpool_recovery_timeout: 90
+    pgpool_client_idle_limit_in_recovery: 0

@@ -30,8 +30,8 @@ NEW_MASTER_NODE_PORT="$9"
 NEW_MASTER_NODE_PGDATA="${10}"
 OLD_PRIMARY_NODE_HOST="${11}"
 OLD_PRIMARY_NODE_PORT="${12}"
-SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 PGVERSION={{ pgpool_postgresql_version }}
 PGCLUSTER={{ pgpool_postgresql_cluster_name }}
 REPMGR_USER={{ pgpool_sr_check_user }}

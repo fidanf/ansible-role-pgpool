@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -o xtrace
+exec > >(logger -i -p {{ pgpool_syslog_facility | lower }}.info) 2>&1
+
+DEST_NODE_HOST="$1" # Hostname of the backend node to be recovered.
+DEST_NODE_PGDATA="$2" # Path to the database cluster of the master(primary) node.
+
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+PGVERSION={{ pgpool_postgresql_version }}
+PGCLUSTER={{ pgpool_postgresql_cluster_name }}
+
+logger -i -p {{ pgpool_syslog_facility | lower }}.info pgpool_remote_start: start: remote start Standby node ${DEST_NODE_HOST}
+
+## Test passwordless SSH
+ssh ${SSH_OPTS} ${DEST_NODE_HOST} ls /tmp > /dev/null
+if [ $? -ne 0 ]; then
+  echo "failover.sh: passwordless SSH to postgres@${NEW_MASTER_NODE_HOST} failed. Please setup passwordless SSH."
+  exit 1
+fi
+
+## Start Standby node
+ssh ${SSH_OPTS} ${DEST_NODE_HOST} pg_ctlcluster ${PGVERSION} ${PGCLUSTER} start
+if [ $? -eq 2 ]; then
+    logger -i -p {{ pgpool_syslog_facility | lower }}.error pgpool_remote_start: $DEST_NODE_HOST PostgreSQL was already running.
+    exit 0;
+fi
+
+if [ $? -ne 0 ]; then
+    logger -i -p {{ pgpool_syslog_facility | lower }}.error pgpool_remote_start: $DEST_NODE_HOST PostgreSQL start failed.
+    exit 1
+fi
+
+logger -i -p {{ pgpool_syslog_facility | lower }}.info pgpool_remote_start: end: $DEST_NODE_HOST PostgreSQL started successfully.
+exit 0

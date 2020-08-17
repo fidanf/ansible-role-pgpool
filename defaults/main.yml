@@ -217,6 +217,8 @@ pgpool_auto_failback: 'off'
 pgpool_auto_failback_interval: 60
 
 # ONLINE RECOVERY
+pgpool_remote_start_template: scripts/pgpool_remote_start.j2
+pgpool_recovery_1st_stage_template: scripts/recovery_1st_stage.repmgr.sh.j2
 pgpool_recovery_user: nobody
 pgpool_recovery_password: ''
 pgpool_recovery_1st_stage_command: ''
