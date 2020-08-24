@@ -1,7 +1,41 @@
 ---
 - name: Verify
   hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    pgpool_delegate_IP: 192.168.30.30
+    pgpool_port: 9999
+    pgpool_pcp_port: 9898
+    pgpool_passwd_users_md5: 
+      - username: admin
+        password: secret
+
   tasks:
-    - name: Example assertion
-      assert:
-        that: true
+    - name: Start Pg-Pool II
+      systemd: 
+        name: pgpool2
+        state: started
+
+    - name: Ensure PgPool port is running
+      wait_for: 
+        port: "{{ pgpool_port }}"
+
+    - name: Ensure PCP port is running
+      wait_for: 
+        port: "{{ pgpool_pcp_port }}"
+
+    - name: Show POOL_NODES
+      postgresql_query:
+        login_host: "{{ pgpool_delegate_IP }}"
+        login_user: "{{ pgpool_passwd_users_md5[0].username }}"
+        db: testdb
+        port: "{{ pgpool_port }}"
+        query: "SHOW POOL_NODES"
+      register: show_pgpool_status
+
+    - name:
+      debug:
+        msg:
+          "show_pgpool_status": "{{ show_pgpool_status }}"
