@@ -22,7 +22,6 @@ pgpool_postgresql_data_directory: "{{ pgpool_postgresql_home_directory }}/{{ pgp
 
 # pgpool user
 pgpool_home_directory: /etc/pgpool2
-pgpool_binaries_directory: /usr/sbin/
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password_cleartext: pgpool
