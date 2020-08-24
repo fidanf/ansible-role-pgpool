@@ -56,7 +56,7 @@ provisioner:
       ansible_python_interpreter: /usr/bin/python3
   inventory:
     host_vars:
-      pgpool01:
+      pgsql01:
         # ansible
         ansible_host: 192.168.30.10
         # repmgr
@@ -69,7 +69,7 @@ provisioner:
           - hostname: pgsql02
         pgpool_other_settings: 
           - hostname: pgsql02
-      pgpool02:
+      pgsql02:
         # ansible
         ansible_host: 192.168.30.11
         # repmgr
