@@ -33,7 +33,7 @@
     path: "{{ pgpool_home_directory }}"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
-    mode: preserve
+    mode: 0775
     recurse: yes
 
 - name: Configure | Add sudo privileges for pgpool group

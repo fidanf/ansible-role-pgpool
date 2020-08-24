@@ -19,7 +19,7 @@
     path: /etc/systemd/system/multi-user.target.wants/pgpool2.service
     regex: ^SyslogFacility=
     line: SyslogFacility={{ pgpool_syslog_facility | lower }}
-    mode: preserve
+    mode: 0644
   notify: reload pgpool2
 
 - name: Syslog | Update rsyslog configuration
