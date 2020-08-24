@@ -28,7 +28,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: static
-        ip: 192.168.56.10
+        ip: 192.168.30.10
         auto_config: true
   - name: pgsql02
     box: ${MOLECULE_DISTRO:-"generic/debian10"}
@@ -44,7 +44,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: static
-        ip: 192.168.56.11
+        ip: 192.168.30.11
         auto_config: true
 provisioner:
   name: ansible
@@ -58,7 +58,7 @@ provisioner:
     host_vars:
       pgpool01:
         # ansible
-        ansible_host: 192.168.56.10
+        ansible_host: 192.168.30.10
         # repmgr
         repmgr_node_id: 1 
         # pgpool
@@ -71,7 +71,7 @@ provisioner:
           - hostname: pgsql02
       pgpool02:
         # ansible
-        ansible_host: 192.168.56.11
+        ansible_host: 192.168.30.11
         # repmgr
         repmgr_node_id: 2
         pgpool_wd_hostname: pgsql02
