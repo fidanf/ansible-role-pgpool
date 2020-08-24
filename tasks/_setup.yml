@@ -1,29 +1,29 @@
 ---
 # https://wiki.postgresql.org/wiki/Apt 
-- name: PgPool | Make sure the CA certificates are available | apt
+- name: Setup | Make sure the CA certificates are available
   apt:
     name: 
       - ca-certificates
       - gnupg
     state: present
 
-- name: PgPool | Add PostgreSQL repository apt-key | apt
+- name: Setup | Add PostgreSQL repository apt-key
   apt_key:
     id: "{{ pgpool_apt_key_id }}"
     url: "{{ pgpool_apt_key_url }}"
     state: present
 
-- name: PgPool | Add PostgreSQL repository | apt
+- name: Setup | Add PostgreSQL repository | apt
   apt_repository:
     repo: "{{ pgpool_apt_repository }}"
     state: present
 
-- name: PgPool | Add PostgreSQL repository preferences | apt
+- name: Setup | Add PostgreSQL repository preferences
   template:
     src: apt_postgresql_org_pub_repos_apt.j2
     dest: /etc/apt/preferences.d/apt_postgresql_org_pub_repos_apt.pref
 
-- name: PgPool | Install PgPool | apt
+- name: Setup | Install PgPool
   apt:
     name: 
       - pgpool2
@@ -34,12 +34,12 @@
     cache_valid_time: 3600
   register: pgpool_install
 
-- name: PgPool | Install dependencies | apt
+- name: Setup | Install dependencies
   apt:
     name: "{{ pgpool_apt_dependencies }}"
     state: present
 
-- name: PgPool | Install extensions
+- name: Setup | Install extensions
   postgresql_query:
     db: template1
     query: CREATE EXTENSION {{ item }}
@@ -48,7 +48,7 @@
   become_user: "{{ pgpool_postgresql_service_user }}"
   ignore_errors: yes # todo : execute only on the primary node using postgresql_info or else
 
-- name: PgPool | Shutdown systemd-based instance upon first installation
+- name: Setup | Shutdown systemd-based instance upon first installation
   service:
     name: pgpool2
     state: stopped
