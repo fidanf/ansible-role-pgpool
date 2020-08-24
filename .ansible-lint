@@ -1,6 +1,7 @@
 # https://docs.ansible.com/ansible-lint/rules/default_rules.html
 use_default_rules: true
 skip_list:
+  - '106' # Role names are now limited to contain only lowercase alphanumeric characters, plus ‘_’ and start with an alpha character   
   - '204' # Lines should be no longer than 160 chars
   - '201' # Trailing whitespace
   - '301' # Commands should not change things if nothing needs doing
