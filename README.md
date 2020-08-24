@@ -11,7 +11,7 @@ Ansible >=2.9
 Role Variables
 --------------
 
-TODO
+Check out the [defaults.yml](./defaults/main.yml) file to retrieve the extended list of this role's variables.
 
 Dependencies
 ------------
@@ -21,7 +21,9 @@ None
 Example Playbook
 ----------------
 
-TODO
+Check out both [inventory.yml](./inventory.yml) and [example.yml](./example.yml) to get a picture of how this role should be used to integrate with an exisiting postgreSQL cluster managed by repmgr.
+
+If you're looking for a role solely dedicated to provide such an environment, take a look at [ansible-role-postgresql-ha](https://github.com/fidanf/ansible-role-postgresql-ha) 
 
 Configuration checking commands
 ------------------------------
@@ -30,12 +32,12 @@ Configuration checking commands
 
 Show all configuration parameters
 ```bash
-pgpool@pgpool01:~$ psql -h 192.168.56.100 -p 9999 -U admin -d testdb -c 'PGPOOL SHOW ALL' 
+pgpool@pgpool01:~$ psql -h 192.168.56.30 -p 9999 -U admin -d testdb -c 'PGPOOL SHOW ALL' 
 ```
 
 Show pool status
 ```bash
-pgpool@pgpool01:~$ psql -h 192.168.56.100 -p 9999 -U admin -d testdb -c 'SHOW POOL_NODES'
+pgpool@pgpool01:~$ psql -h 192.168.56.30 -p 9999 -U admin -d testdb -c 'SHOW POOL_NODES'
  node_id | hostname | port | status | lb_weight |  role   | select_cnt | load_balance_node | replication_delay | replication_state | replication_sync_state | last_status_change
 ---------+----------+------+--------+-----------+---------+------------+-------------------+-------------------+-------------------+------------------------+---------------------
  0       | pgsql01  | 5432 | up     | 0.333333  | primary | 30         | true              | 0                 |                   |                        | 2020-07-27 14:50:55
@@ -98,9 +100,9 @@ Display the parameter values as defined in pgpool.conf
 pgpool@pgpool01:~$ pcp_pool_status -h /var/run/pcp -U pgpool -w
 ```
 
-Show watchdog cluster status
+Display PgPool's cluster status
 ```bash
-pcp_watchdog_info -U pgpool -h /var/run/pcp -w -v
+pcp_watchdog_info -h 127.0.0.1 -U pgpool -w -v
 ```
 
 More details at : https://www.pgpool.net/docs/latest/en/html/pcp-commands.html 
