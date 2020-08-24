@@ -1,0 +1,4 @@
+---
+- src: https://github.com/fidanf/ansible-role-postgresql-ha
+  name: fidanf.postgresql-ha
+  version: 2.2.0

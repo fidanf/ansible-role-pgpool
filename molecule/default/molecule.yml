@@ -1,13 +1,83 @@
 ---
 dependency:
   name: galaxy
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
 driver:
-  name: docker
+  name: vagrant
+  provider:
+    name: libvirt
+    ssh_connection_options:
+      - -o ControlMaster=auto
+      - -o ControlPath=~/.ansible/cp/%r@%h-%p
+      - -o ControlPersist 1h
 platforms:
-  - name: instance
-    image: docker.io/pycontribs/centos:8
-    pre_build_image: true
+  - name: pgsql01
+    box: ${MOLECULE_DISTRO:-"generic/debian10"}
+    groups: 
+      - pgpool
+    instance_raw_config_args:
+      - 'vm.hostname = "pgsql01"'
+      - 'ssh.keep_alive = true'
+      - 'ssh.forward_agent = true'
+      - 'ssh.insert_key = false'
+    memory: 1024
+    cpus: 1
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.56.10
+        auto_config: true
+  - name: pgsql02
+    box: ${MOLECULE_DISTRO:-"generic/debian10"}
+    instance_raw_config_args:
+      - 'vm.hostname = "pgsql02"'
+      - 'ssh.keep_alive = true'
+      - 'ssh.forward_agent = true'
+      - 'ssh.insert_key = false'
+    groups: 
+      - pgpool
+    memory: 1024
+    cpus: 1
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.56.11
+        auto_config: true
 provisioner:
   name: ansible
-verifier:
-  name: ansible
+  log: true
+  config_options:
+    defaults:
+      callback_whitelist: "profile_tasks,timer"
+      allow_world_readable_tmpfiles: true
+      ansible_python_interpreter: /usr/bin/python3
+  inventory:
+    host_vars:
+      pgpool01:
+        # ansible
+        ansible_host: 192.168.56.10
+        # repmgr
+        repmgr_node_id: 1 
+        # pgpool
+        pgpool_wd_hostname: pgsql01
+        pgpool_wd_priority: 1
+        # watchdog
+        pgpool_heartbeat_destination:
+          - hostname: pgsql02
+        pgpool_other_settings: 
+          - hostname: pgsql02
+      pgpool02:
+        # ansible
+        ansible_host: 192.168.56.11
+        # repmgr
+        repmgr_node_id: 2
+        pgpool_wd_hostname: pgsql02
+        pgpool_wd_priority: 2
+        # watchdog
+        pgpool_heartbeat_destination:
+          - hostname: pgsql01
+        pgpool_other_settings: 
+          - hostname: pgsql01

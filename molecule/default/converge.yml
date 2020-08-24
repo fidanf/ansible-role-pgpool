@@ -1,7 +1,105 @@
 ---
 - name: Converge
-  hosts: all
-  tasks:
-    - name: "Include ansible-role-pgpool"
-      include_role:
-        name: "ansible-role-pgpool"
+  hosts: pgpool
+  gather_facts: yes
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
+  roles:
+    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-pgpool' }}"
+      vars:
+        pgpool_postgresql_version: 12
+        # .pcpass file
+        pgpool_pcppass_entries: 
+          - hostname: pgsql01
+            port: 9898
+            user: pgpool
+            password: pgpool
+          - hostname: pgsql02
+            port: 9898
+            user: pgpool
+            password: pgpool
+          - hostname: "{{ pgpool_pcp_socket_dir }}" # allows using -h /var/run/pcp instead of 'localhost' 
+            port: 9898
+            user: pgpool
+            password: pgpool
+          - hostname: 127.0.0.1
+            port: 9898
+            user: pgpool
+            password: pgpool
+        # pool_passwd
+        pgpool_passwd_users_md5: 
+          - username: admin
+            password: secret
+        # backend settings
+        pgpool_backend_servers:
+          - hostname: pgsql01
+            port: 5432
+            weight: 1
+            data_directory: "{{ pgpool_postgresql_data_directory }}"
+            flag: ALLOW_TO_FAILOVER
+            application_name: pgsql01
+          - hostname: pgsql02
+            port: 5432
+            weight: 1
+            data_directory: "{{ pgpool_postgresql_data_directory }}"
+            flag: ALLOW_TO_FAILOVER
+            application_name: pgsql02
+        # authentication 
+        pgpool_enable_pool_hba: on
+        pgpool_pool_hba_entries:
+          - type: host
+            database: all
+            user: admin
+            address: 192.168.56.0/24
+            method: trust
+        # logs
+        pgpool_log_hostname: 'on'
+        pgpool_log_statement: 'on'
+        pgpool_log_per_node_statement: 'on'
+        pgpool_log_min_messages: info
+        pgpool_syslog_facility: LOCAL1
+        # connection_cache
+        pgpool_connection_cache: 'on'
+        # Pool
+        pgpool_num_init_children: 32
+        pgpool_max_pool: 4
+        pgpool_serialize_accept: 'off'
+        pgpool_child_life_time: 0
+        pgpool_child_max_connections: 0
+        pgpool_connection_life_time: 0
+        pgpool_client_idle_limit: 300
+        # load-balancing
+        pgpool_load_balance_mode: 'on'
+        pgpool_disable_load_balance_on_write: 'transaction' # one of 'transaction', 'trans_transaction' or 'always'
+        pgpool_statement_level_load_balance: 'on'
+        # running mode
+        pgpool_sr_check_user: repmgr
+        pgpool_sr_check_database: repmgr
+        pgpool_follow_master_command: "{{ pgpool_home_directory }}/follow_master.sh %d %h %p %D %m %H %M %P %r %R %N %S"
+        # HEALTH CHECK GLOBAL PARAMETERS
+        pgpool_health_check_period: 10
+        pgpool_health_check_timeout: 20
+        pgpool_health_check_user: repmgr
+        pgpool_health_check_database: repmgr
+        pgpool_health_check_max_retries: 3
+        pgpool_health_check_retry_delay: 10
+        pgpool_connect_timeout: 10000
+        # FAILOVER AND FAILBACK
+        pgpool_failover_command: "{{ pgpool_home_directory }}/failover.sh %d %h %p %D %m %H %M %P %r %R %N %S"
+        pgpool_failover_on_backend_error: 'off'
+        pgpool_auto_failback: 'on'
+        # Online Recovery
+        pgpool_recovery_user: postgres
+        pgpool_recovery_password: ''
+        pgpool_recovery_1st_stage_command: recovery_1st_stage.sh
+        pgpool_recovery_2nd_stage_command: ''
+        pgpool_recovery_timeout: 90
+        pgpool_client_idle_limit_in_recovery: 0
+        # Watchdog
+        pgpool_delegate_IP: 192.168.56.30
+        pgpool_use_watchdog: 'on'
+        pgpool_if_up_cmd: "/usr/bin/sudo /usr/sbin/ip addr add $_IP_$/24 dev eth1 label eth1:0"
+        pgpool_if_down_cmd: "/usr/bin/sudo /usr/sbin/ip addr del $_IP_$/24 dev eth1"
+        pgpool_arping_cmd: "/usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth1"

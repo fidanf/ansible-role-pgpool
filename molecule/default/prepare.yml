@@ -1,0 +1,100 @@
+---
+- name: Prepare
+  hosts: pgpool
+  gather_facts: no
+  become: yes
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    repmgr_version: "5.1"
+    repmgr_master: pgsql01
+    repmgr_target_group: pgpool
+    repmgr_promote_command: /usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file
+    repmgr_follow_command: /usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n
+    repmgr_monitoring_history: "yes"
+    repmgr_connection_check_type: query
+    repmgr_log_level: INFO
+    postgresql_version: 12
+    postgresql_listen_addresses: "*"
+    postgresql_port: 5432
+    postgresql_max_connections: 128
+    postgresql_wal_level: "replica"
+    postgresql_max_wal_senders: 10
+    postgresql_max_replication_slots: 10
+    postgresql_wal_keep_segments: 100
+    postgresql_hot_standby: on
+    postgresql_data_checksums: true
+    postgresql_wal_compression: on
+    postgresql_wal_log_hints: on
+    postgresql_ext_install_repmgr: yes
+    postgresql_shared_preload_libraries:
+      - repmgr
+    postgresql_log_checkpoints: on
+    postgresql_log_connections: on
+    postgresql_log_disconnections: on
+    postgresql_log_temp_files: 0
+    # pg_hba.conf
+    postgresql_pg_hba_custom:
+      - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "192.168.56.0/24", method: "trust" }  
+      - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+      - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+      - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.56.0/24", method: "trust" }  
+      - { type: "host", database: "all", user: "postgres", address: "192.168.56.0/24", method: "trust" }
+      - { type: "host", database: "testdb", user: "all", address: "192.168.56.0/24", method: "md5" }
+    # Databases
+    postgresql_databases:
+      - name: "{{ repmgr_database }}"
+        owner: "{{ repmgr_user }}"
+        encoding: "UTF-8"
+      - name: testdb
+        owner: admin
+        encoding: "UTF-8"
+    # Users
+    postgresql_users:
+      - name: "{{ repmgr_user }}"
+        pass: "{{ repmgr_password }}"
+      - name: admin
+        pass: secret # postgresql >=10 does not accept unencrypted passwords
+        encrypted: yes
+    # Roles
+    postgresql_user_privileges:
+      - name: "{{ repmgr_user }}"
+        db: "{{ repmgr_database }}"
+        priv: "ALL"
+        role_attr_flags: "SUPERUSER,REPLICATION"
+      - name: admin
+        db: testdb
+        role_attr_flags: "SUPERUSER"
+
+  pre_tasks:
+    - name: Wait for SSH
+      wait_for_connection:
+
+    - name: Gather facts for the first time
+      setup:
+
+    - name: Install python dependencies
+      apt: 
+        name: 
+          - python3-apt
+        update_cache: yes
+
+    - name: Use python3 by default
+      alternatives: 
+        path: /usr/bin/python3
+        link: /usr/bin/python
+        name: python
+        priority: 1
+
+    - name: Build hosts file
+      lineinfile: 
+        path: /etc/hosts 
+        regexp: '.*{{ item }}$'
+        line: "{{ hostvars[item].ansible_eth1.ipv4.address }} {{ item }}"
+        state: present
+        mode: 0644
+      when: hostvars[item].ansible_eth1.ipv4.address is defined
+      loop: "{{ groups[repmgr_target_group] }}"
+
+  roles:
+    - name: fidanf.postgresql-ha
