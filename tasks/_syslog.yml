@@ -6,21 +6,25 @@
     state: touch
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
+  tags: ['molecule-idempotence-notest']
 
 - name: Syslog | Create logrotate configuration
   template:
     src: pgpool.logrotate.j2
     dest: /etc/logrotate.d/pgpool
+    mode: 0644
 
 - name: Syslog | Update syslog facility
   lineinfile:
     path: /etc/systemd/system/multi-user.target.wants/pgpool2.service
     regex: ^SyslogFacility=
     line: SyslogFacility={{ pgpool_syslog_facility | lower }}
+    mode: preserve
   notify: reload pgpool2
 
 - name: Syslog | Update rsyslog configuration
   template:
     src: rsyslog.pgpool.conf.j2
     dest: /etc/rsyslog.d/pgpool.conf
+    mode: 0644
   notify: restart rsyslog

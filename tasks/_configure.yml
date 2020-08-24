@@ -16,6 +16,7 @@
     append: yes
     password: "{{ pgpool_postgres_password_hashed }}"
     update_password: always
+  tags: ['molecule-idempotence-notest']
 
 - name: Configure | Create pgpool user
   user:
@@ -25,18 +26,21 @@
     password: "{{ pgpool_password_hashed }}"
     update_password: always
     group: "{{ pgpool_group }}"
+  tags: ['molecule-idempotence-notest']
 
 - name: Configure | Update pgpool user's file permissions
   file:
     path: "{{ pgpool_home_directory }}"
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
+    mode: preserve
     recurse: yes
 
 - name: Configure | Add sudo privileges for pgpool group
   template:
     src: sudoers.pgpool.j2
     dest: "/etc/sudoers.d/{{ pgpool_user }}"
+    mode: 0644
 
 - name: Configure | Create socket/log directories
   file:
@@ -129,3 +133,4 @@
   loop: "{{ pgpool_passwd_users_md5 }}"
   when: pgpool_passwd_use_md5 | bool
   become_user: "{{ pgpool_user }}"
+  tags: ['molecule-idempotence-notest']
