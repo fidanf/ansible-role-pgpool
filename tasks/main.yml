@@ -6,8 +6,8 @@
     - "{{ role_path }}/vars/empty.yml"
   tags: ['always']
 
-- import_tasks: _setup.yml
-  tags: ['setup']
+- import_tasks: _apt.yml
+  tags: ['apt']
 
 - name: Populate service facts
   service_facts:
