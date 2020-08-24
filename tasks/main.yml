@@ -6,16 +6,8 @@
     - "{{ role_path }}/vars/empty.yml"
   tags: ['always']
 
-- import_tasks: _apt.yml
-  when: 
-    - pgpool_apt_install | bool
-    - not pgpool_build_sources | bool
-  tags: ['apt']
-
-- import_tasks: _source.yml
-  when: 
-    - not pgpool_apt_install | bool
-    - pgpool_build_sources | bool
+- import_tasks: _setup.yml
+  tags: ['setup']
 
 - name: Generated hashed passwords for Ansible
   set_fact: 
@@ -44,18 +36,6 @@
     update_password: always
     group: "{{ pgpool_group }}"
 
-- name: Get pgpool-related binaries
-  find:
-    path: "{{ pgpool_binaries_directory }}"
-    patterns: ['pcp_*', 'watchdog_*', 'pg_*']
-  register: pg_binaries
-
-- name: Update binaries permissions
-  file:
-    path: "{{ item.path }}"
-    mode: 0777
-  loop: "{{ pg_binaries.files }}"
-
 - name: Update pgpool user's file permissions
   file:
     path: "{{ pgpool_home_directory }}"
@@ -65,7 +45,7 @@
 
 - name: Add sudo privileges for pgpool group
   template:
-    src: "sudoers.pgpool.j2"
+    src: sudoers.pgpool.j2
     dest: "/etc/sudoers.d/{{ pgpool_user }}"
 
 - name: Create socket/log directories
@@ -117,10 +97,12 @@
     - pgpool_pool_hba_entries | length > 0
 
 - name: Upload pcp.conf
-  shell:
-    cmd: echo "pgpool:$(pg_md5 {{ pgpool_password_cleartext }})" > {{ pgpool_home_directory }}/pcp.conf
-  become: yes
-  become_user: "{{ pgpool_user }}"
+  template:
+    src: pcp.conf.j2
+    dest: "{{ pgpool_home_directory }}/pcp.conf"
+    owner: "{{ pgpool_user }}"
+    group: "{{ pgpool_group }}"
+    mode: 0775
 
 - name: Upload .pcppass file (pgpool)
   template:

@@ -5,47 +5,27 @@ pgpool_apt_key_id: "ACCC4CF8"
 pgpool_apt_key_url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
 pgpool_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
 pgpool_apt_pin_priority: 500
-pgpool_postgresql_version: 11
+pgpool_apt_dependencies:
+  - postgresql-client-{{ pgpool_postgresql_version }}
+  - postgresql-client-common
+  - arping
+pgpool_extensions:
+  - pgpool_recovery
+  - pgpool_adm
+pgpool_postgresql_version: 12
 pgpool_postgresql_cluster_name: main
 pgpool_postgresql_service_user: postgres
 pgpool_postgresql_service_group: postgres
 pgpool_postgres_password_cleartext: postgres
 pgpool_postgresql_home_directory: /var/lib/postgresql
 pgpool_postgresql_data_directory: "{{ pgpool_postgresql_home_directory }}/{{ pgpool_postgresql_version }}/{{ pgpool_postgresql_cluster_name }}"
-pgpool_apt_dependencies:
-  - postgresql-client-{{ pgpool_postgresql_version }}
-  - postgresql-client-common
-  - arping
-
-# source installation settings
-pgpool_build_sources: no
-pgpool_build_apt_dependencies:
-  - software-properties-common
-  - build-essential
-  - libpq-dev
-  - libssl-dev
-  - libpgpool0
-  - libmemcached11
-  - postgresql-client
-  - postgresql-client-common
-  - postgresql-common
-  - arping
-pgpool_build_version: "4.1.2"
-pgpool_root_directory: /usr/local
-pgpool_build_directory: /usr/src/pgpool2
-pgpool_build_opts: --prefix={{ pgpool_root_directory }} --with-openssl
-pgpool_logfile_path: /var/log/pgpool/pgpool.log
-pgpool_start_command: pgpool -n -d > {{ pgpool_logfile_path }} 2>&1 &
 
 # pgpool user
-pgpool_home_directory: "{{ '/etc/pgpool2' if pgpool_apt_install else '/usr/local/etc' }}"
-pgpool_binaries_directory: "{{ '/usr/sbin/' if pgpool_apt_install else '/usr/local/bin' }}"
+pgpool_home_directory: /etc/pgpool2
+pgpool_binaries_directory: /usr/sbin/
 pgpool_group: pgpool
 pgpool_user: pgpool
 pgpool_password_cleartext: pgpool
-pgpool_extensions:
-  - pgpool_recovery
-  - pgpool_adm
 
 # .pgpass file
 pgpool_pgpass_entries: []
