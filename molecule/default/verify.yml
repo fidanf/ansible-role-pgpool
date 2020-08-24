@@ -20,10 +20,12 @@
 
     - name: Ensure PgPool port is running
       wait_for: 
+        host: 0.0.0.0
         port: "{{ pgpool_port }}"
 
     - name: Ensure PCP port is running
       wait_for: 
+        host: 0.0.0.0
         port: "{{ pgpool_pcp_port }}"
 
     - name: Show POOL_NODES

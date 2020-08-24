@@ -40,7 +40,7 @@
       - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
       - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.30.0/24", method: "trust" }  
       - { type: "host", database: "all", user: "postgres", address: "192.168.30.0/24", method: "trust" }
-      - { type: "host", database: "testdb", user: "all", address: "192.168.30.0/24", method: "md5" }
+      - { type: "host", database: "testdb", user: "all", address: "192.168.0.0/16", method: "trust" }
     # Databases
     postgresql_databases:
       - name: "{{ repmgr_database }}"
