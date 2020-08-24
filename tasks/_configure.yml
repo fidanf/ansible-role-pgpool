@@ -35,6 +35,7 @@
     group: "{{ pgpool_group }}"
     mode: 0775
     recurse: yes
+  tags: ['molecule-idempotence-notest']
 
 - name: Configure | Add sudo privileges for pgpool group
   template:
