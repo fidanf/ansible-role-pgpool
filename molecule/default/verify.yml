@@ -11,6 +11,7 @@
     pgpool_passwd_users_md5: 
       - username: admin
         password: secret
+    pgpool_user: pgpool
 
   tasks:
     - name: Start Pg-Pool II
@@ -35,9 +36,20 @@
         db: testdb
         port: "{{ pgpool_port }}"
         query: "SHOW POOL_NODES"
-      register: show_pgpool_status
+      register: pool_status
 
-    - name:
+    - name: Output pool status
       debug:
         msg:
-          "show_pgpool_status": "{{ show_pgpool_status }}"
+          "pool_status": "{{ pool_status.query_result }}"
+
+    - name: Get Watchdog info
+      shell:
+        cmd: pcp_watchdog_info -h 127.0.0.1 -U pgpool -wv
+      become_user: "{{ pgpool_user }}"
+      register: watchdog_status
+
+    - name: Output watchdog status
+      debug:
+        msg:
+          "watchdog_status": "{{ watchdog_status.stdout_lines }}"
