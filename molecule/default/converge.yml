@@ -100,6 +100,6 @@
         # Watchdog
         pgpool_delegate_IP: 192.168.30.30
         pgpool_use_watchdog: 'on'
-        pgpool_if_up_cmd: "/usr/bin/sudo /usr/sbin/ip addr add $_IP_$/24 dev eth1 label eth1:0"
-        pgpool_if_down_cmd: "/usr/bin/sudo /usr/sbin/ip addr del $_IP_$/24 dev eth1"
-        pgpool_arping_cmd: "/usr/bin/sudo /usr/sbin/arping -U $_IP_$ -w 1 -I eth1"
+        pgpool_if_up_cmd: /usr/bin/sudo {{ pgpool_if_cmd_path }}/ip addr add $_IP_$/24 dev eth1 label eth1:0
+        pgpool_if_down_cmd: /usr/bin/sudo {{ pgpool_if_cmd_path }}/ip addr del $_IP_$/24 dev eth1
+        pgpool_arping_cmd: /usr/bin/sudo {{ pgpool_arping_path }}/arping -U $_IP_$ -w 1 -I eth1
