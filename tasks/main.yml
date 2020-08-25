@@ -19,7 +19,7 @@
   tags: ['always']
   
 - import_tasks: _configure.yml
-  tags: ['configure']
+  tags: ['configure', 'molecule-idempotence-notest']
 
 - import_tasks: _syslog.yml
   tags: ['syslog']

@@ -16,7 +16,6 @@
     append: yes
     password: "{{ pgpool_postgres_password_hashed }}"
     update_password: always
-  tags: ['molecule-idempotence-notest']
 
 - name: Configure | Create pgpool user
   user:
@@ -26,7 +25,6 @@
     password: "{{ pgpool_password_hashed }}"
     update_password: always
     group: "{{ pgpool_group }}"
-  tags: ['molecule-idempotence-notest']
 
 - name: Configure | Update pgpool user's file permissions
   file:
@@ -35,7 +33,6 @@
     group: "{{ pgpool_group }}"
     mode: 0775
     recurse: yes
-  tags: ['molecule-idempotence-notest']
 
 - name: Configure | Add sudo privileges for pgpool group
   template:
@@ -134,4 +131,3 @@
   loop: "{{ pgpool_passwd_users_md5 }}"
   when: pgpool_passwd_use_md5 | bool
   become_user: "{{ pgpool_user }}"
-  tags: ['molecule-idempotence-notest']
