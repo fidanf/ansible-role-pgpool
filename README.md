@@ -8,7 +8,10 @@ Installs and configures PgPool-II for Debian/Ubuntu. The default _running mode_ 
 Requirements
 ------------
 
-Ansible >=2.9
+Python >=3.6
+The role is compatible with Ansible >=2.10 but hasn't yet be tested with Ansible 3.x.
+
+See [./requirements.txt](./requirements.txt) for detailled dependencies used to develop the role.
 
 Role Variables
 --------------
