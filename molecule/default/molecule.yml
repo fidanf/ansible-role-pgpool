@@ -9,20 +9,14 @@ driver:
   name: vagrant
   provider:
     name: libvirt
-    ssh_connection_options:
-      - -o ControlMaster=auto
-      - -o ControlPath=~/.ansible/cp/%r@%h-%p
-      - -o ControlPersist 1h
 platforms:
   - name: pgsql01
     box: ${MOLECULE_DISTRO:-"generic/debian10"}
     groups: 
       - pgpool
-    instance_raw_config_args:
-      - 'vm.hostname = "pgsql01"'
-      - 'ssh.keep_alive = true'
-      - 'ssh.forward_agent = true'
-      - 'ssh.insert_key = false'
+    config_options:
+      ssh.keep_alive: yes
+      ssh.remote_user: "'vagrant'"
     memory: 1024
     cpus: 1
     interfaces:
@@ -32,11 +26,9 @@ platforms:
         auto_config: true
   - name: pgsql02
     box: ${MOLECULE_DISTRO:-"generic/debian10"}
-    instance_raw_config_args:
-      - 'vm.hostname = "pgsql02"'
-      - 'ssh.keep_alive = true'
-      - 'ssh.forward_agent = true'
-      - 'ssh.insert_key = false'
+    config_options:
+      ssh.keep_alive: yes
+      ssh.remote_user: "'vagrant'"
     groups: 
       - pgpool
     memory: 1024
