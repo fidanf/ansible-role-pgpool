@@ -5,6 +5,16 @@ PgPool
 
 Installs and configures PgPool-II for Debian/Ubuntu. The default _running mode_ is **streaming replication mode**.
 
+- [PgPool](#pgpool)
+  - [Requirements](#requirements)
+  - [Role Variables](#role-variables)
+  - [Dependencies](#dependencies)
+  - [Example Playbook](#example-playbook)
+  - [Configuration checking commands](#configuration-checking-commands)
+  - [PCP commands](#pcp-commands)
+  - [Handling server reboots](#handling-server-reboots)
+  - [License](#license)
+
 Requirements
 ------------
 
@@ -108,6 +118,20 @@ pgpool@pgpool01:~$ pcp_pool_status -h /var/run/pcp -U pgpool -w
 Display PgPool's cluster status
 ```bash
 pcp_watchdog_info -h 127.0.0.1 -U pgpool -w -v
+```
+
+Handling server reboots
+-----------------------
+
+Although using the recommended paths from the official documentation, socket directories seems to have unsufficient privileges to be able to recreate PIDs upon server reboots.
+
+If you're running PgPool and PostgreSQL on the same servers, you may use the following configuration instead which solves the problem :
+
+```yaml
+pgpool_pid_file_name: /var/run/postgresql/pgpool.pid
+pgpool_socket_dir: /var/run/postgresql
+pgpool_pcp_socket_dir: /var/run/postgresql
+pgpool_wd_ipc_socket_dir: /var/run/postgresql
 ```
 
 More details at : https://www.pgpool.net/docs/latest/en/html/pcp-commands.html 
