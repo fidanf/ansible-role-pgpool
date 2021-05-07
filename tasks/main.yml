@@ -26,3 +26,6 @@
 
 - import_tasks: _scripts.yml
   tags: ['scripts']
+
+- import_tasks: _systemd.yml
+  tags: ['systemd']
