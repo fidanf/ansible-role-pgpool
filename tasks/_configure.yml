@@ -40,7 +40,7 @@
     dest: "/etc/sudoers.d/{{ pgpool_user }}"
     mode: 0644
 
-- name: Configure | Create socket/log directories
+- name: Configure | Create socket
   file:
     path: "{{ item }}"
     state: directory
@@ -51,7 +51,6 @@
     - "{{ pgpool_socket_dir }}"
     - "{{ pgpool_pcp_socket_dir }}"
     - "{{ pgpool_wd_ipc_socket_dir }}"
-    - "{{ pgpool_logdir }}"
 
 - name: Configure | Upload pgpool.conf
   template:
