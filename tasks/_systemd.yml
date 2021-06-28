@@ -1,0 +1,6 @@
+---
+- name: Start Pg-Pool II
+  systemd: 
+    name: pgpool2
+    state: "{{ pgpool_systemd_state }}"
+    enabled: "{{ pgpool_systemd_enabled }}"
