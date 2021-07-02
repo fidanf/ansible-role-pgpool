@@ -12,8 +12,8 @@
     path: "{{ pgpool_logdir }}/pgpool.log"
     mode: 0644
     state: touch
-    owner: "{{ pgpool_user }}"
-    group: "{{ pgpool_group }}"
+    owner: postgres
+    group: postgres
   tags: ['molecule-idempotence-notest']
 
 - name: Syslog | Create logrotate configuration
@@ -53,3 +53,11 @@
     dest: /etc/rsyslog.d/pgpool.conf
     mode: 0644
   notify: restart rsyslog
+
+- name: Syslog | Create cron task for faster rotation checks
+  cron:
+    name: Rotate pgpool.log
+    minute: "{{ pgpool_logrotate_cron_schedule.minute }}"
+    hour: "{{ pgpool_logrotate_cron_schedule.hour }}"
+    job: /usr/sbin/logrotate -v /etc/logrotate.d/pgpool
+  when: pgpool_logrotate_cron_enabled
