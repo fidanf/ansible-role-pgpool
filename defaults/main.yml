@@ -19,9 +19,16 @@ pgpool_postgresql_service_group: postgres
 pgpool_postgres_password_cleartext: postgres
 pgpool_postgresql_home_directory: /var/lib/postgresql
 pgpool_postgresql_data_directory: "{{ pgpool_postgresql_home_directory }}/{{ pgpool_postgresql_version }}/{{ pgpool_postgresql_cluster_name }}"
+
 # systemd
 pgpool_systemd_state: started
 pgpool_systemd_enabled: yes
+
+# logrotate
+pgpool_logrotate_cron_enabled: yes
+pgpool_logrotate_cron_schedule:
+  minute: '*'
+  hour: '1'
 
 # pgpool user
 pgpool_home_directory: /etc/pgpool2

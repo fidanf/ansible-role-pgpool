@@ -1,11 +1,9 @@
 {{ pgpool_logdir }}/*.log {
-	monthly
+	daily
 	size 60M
 	rotate 6
 	compress
 	delaycompress
 	missingok
-	notifempty
-	create 644 postgres postgres
-	su postgres postgres
+	copytruncate
 }
