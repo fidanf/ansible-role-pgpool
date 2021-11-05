@@ -3,11 +3,9 @@
   hosts: pgpool
   gather_facts: yes
   become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
+
   roles:
-    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-pgpool' }}"
+    - name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
       vars:
         pgpool_postgresql_version: 12
         # .pcpass file

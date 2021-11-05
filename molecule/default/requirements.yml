@@ -1,4 +1,8 @@
 ---
-- src: https://github.com/fidanf/ansible-role-postgresql-ha
-  name: fidanf.postgresql-ha
-  version: master
+roles:
+  - src: https://github.com/fidanf/ansible-role-postgresql-ha
+    name: fidanf.postgresql_ha
+    version: master
+
+collections:
+  - community.crypto
