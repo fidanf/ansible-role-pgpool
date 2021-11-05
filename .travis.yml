@@ -13,13 +13,10 @@ env:
     - MOLECULE_DISTRO: generic/ubuntu1804
     - MOLECULE_DISTRO: generic/debian10
 
-services:
-  - docker
-
 cache:
   directories:
     - /home/travis/.vagrant.d/boxes
-    - /home/travis/.cache/pipenv
+    - /home/travis/.cache/pip
 
 before_install:
   - |
@@ -29,9 +26,10 @@ before_install:
     sudo apt-get install -y build-essential qemu-kvm qemu-utils libvirt-dev libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-manager dnsmasq
     CONFIGURE_ARGS="with-libvirt-include=/usr/share/libvirt with-libvirt-lib=/usr/lib64" sudo vagrant plugin install vagrant-libvirt
   - |
-    curl -skL https://bootstrap.pypa.io/get-pip.py | sudo -H python3
-    sudo -H pip3 install --upgrade --ignore-installed --requirement requirements.txt
-    sudo -H ansible-galaxy collection install community.crypto
+    sudo -H pip install --upgrade pip
+    sudo -H pip install --upgrade --ignore-installed --requirement requirements.txt
+  - |
+    molecule --version
 
 script:
   - sudo -E molecule test
