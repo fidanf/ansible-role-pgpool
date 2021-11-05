@@ -2,6 +2,7 @@
 galaxy_info:
   author: Frank FIDANZA
   company: RG
+  namespace: fidanf
   role_name: pgpool
   description: Installs and configures Pgpool-II
   min_ansible_version: 2.8
