@@ -3,7 +3,7 @@ dependency:
   name: galaxy
   options:
     role-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/default/requirements.yml
-    requirements-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/default/requirements.yml
+    requirements-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/default/collections.yml
 lint: |
   set -e
   yamllint .
