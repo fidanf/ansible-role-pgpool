@@ -1,6 +1,9 @@
 ---
 dependency:
   name: galaxy
+  options:
+    role-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/default/requirements.yml
+    requirements-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/default/collections.yml
 lint: |
   set -e
   yamllint .
@@ -12,7 +15,7 @@ driver:
 platforms:
   - name: pgsql01
     box: ${MOLECULE_DISTRO:-"generic/debian10"}
-    groups: 
+    groups:
       - pgpool
     config_options:
       ssh.keep_alive: yes
@@ -29,7 +32,7 @@ platforms:
     config_options:
       ssh.keep_alive: yes
       ssh.remote_user: "'vagrant'"
-    groups: 
+    groups:
       - pgpool
     memory: 1024
     cpus: 1
@@ -41,25 +44,20 @@ platforms:
 provisioner:
   name: ansible
   log: true
-  config_options:
-    defaults:
-      callback_whitelist: "profile_tasks,timer"
-      allow_world_readable_tmpfiles: true
-      ansible_python_interpreter: /usr/bin/python3
   inventory:
     host_vars:
       pgsql01:
         # ansible
         ansible_host: 192.168.30.10
         # repmgr
-        repmgr_node_id: 1 
+        repmgr_node_id: 1
         # pgpool
         pgpool_wd_hostname: pgsql01
         pgpool_wd_priority: 1
         # watchdog
         pgpool_heartbeat_destination:
           - hostname: pgsql02
-        pgpool_other_settings: 
+        pgpool_other_settings:
           - hostname: pgsql02
       pgsql02:
         # ansible
@@ -71,5 +69,11 @@ provisioner:
         # watchdog
         pgpool_heartbeat_destination:
           - hostname: pgsql01
-        pgpool_other_settings: 
+        pgpool_other_settings:
           - hostname: pgsql01
+  config_options:
+    defaults:
+      callback_whitelist: "profile_tasks,timer"
+      allow_world_readable_tmpfiles: true
+      interpreter_python: /usr/bin/python3
+      pipelining: true
