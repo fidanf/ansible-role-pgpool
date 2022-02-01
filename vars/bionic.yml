@@ -3,4 +3,4 @@ ppgool_ping_path: /bin
 pgpool_if_cmd_path: /sbin
 pgpool_arping_path: /usr/sbin
 pgpool_systemctl_path: /bin
-pgpool_patch_rsyslog: true
+pgpool_patch_syslog: true

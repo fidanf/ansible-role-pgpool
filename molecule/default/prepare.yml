@@ -34,11 +34,14 @@
       when: hostvars[item].ansible_eth1.ipv4.address is defined
       loop: "{{ groups[repmgr_target_group] }}"
 
+    - name: Install acl package
+      apt: 
+        name: acl
+
   roles:
     - name: fidanf.postgresql_ha
       vars:
-        repmgr_version: 5.2
-        repmgr_version_debian: 5.2.1-1.pgdg100+1
+        repmgr_version: 5.3
         repmgr_master: pgsql01
         repmgr_target_group: pgpool
         repmgr_promote_command: /usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file
@@ -46,7 +49,7 @@
         repmgr_monitoring_history: "yes"
         repmgr_connection_check_type: query
         repmgr_log_level: INFO
-        postgresql_version: 12
+        postgresql_version: 13
         postgresql_listen_addresses: "*"
         postgresql_port: 5432
         postgresql_max_connections: 128
