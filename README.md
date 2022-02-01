@@ -11,6 +11,8 @@ Tested with :
   - Ubuntu 18.04.x :heavy_check_mark:
   - Ubuntu 20.04.x :heavy_check_mark:
 
+---
+
 - [PgPool](#pgpool)
   - [Requirements](#requirements)
   - [Role Variables](#role-variables)
