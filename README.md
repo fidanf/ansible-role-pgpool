@@ -5,6 +5,12 @@ PgPool
 
 Installs and configures PgPool-II for Debian/Ubuntu. The default _running mode_ is **streaming replication mode**.
 
+Tested with :
+  - Debian 10.x :heavy_check_mark:
+  - Debian 11.x :heavy_check_mark:
+  - Ubuntu 18.04.x :heavy_check_mark:
+  - Ubuntu 20.04.x :heavy_check_mark:
+
 - [PgPool](#pgpool)
   - [Requirements](#requirements)
   - [Role Variables](#role-variables)
@@ -18,8 +24,8 @@ Installs and configures PgPool-II for Debian/Ubuntu. The default _running mode_ 
 Requirements
 ------------
 
-Python >=3.6
-The role is compatible with Ansible >=2.10 but hasn't yet be tested with Ansible 3.x.
+- Python >=3.8
+- Ansible-core >=2.12
 
 See [./requirements.txt](./requirements.txt) for detailled dependencies used to develop the role.
 
