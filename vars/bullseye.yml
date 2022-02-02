@@ -1,0 +1,5 @@
+---
+ppgool_ping_path: /usr/bin
+pgpool_if_cmd_path: /usr/bin
+pgpool_arping_path: /usr/sbin
+pgpool_systemctl_path: /usr/bin
