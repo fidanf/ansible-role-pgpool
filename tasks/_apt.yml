@@ -18,6 +18,13 @@
     repo: "{{ pgpool_apt_repository }}"
     state: present
 
+- name: Apt | Add PostgreSQL archive repository
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+    filename: apt-archive.postgresql.org
+  loop: "{{ pgpool_apt_archive_repositories }}"
+
 - name: Apt | Add PostgreSQL repository preferences
   template:
     src: apt_postgresql_org_pub_repos_apt.j2
