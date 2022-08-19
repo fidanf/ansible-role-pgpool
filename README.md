@@ -11,6 +11,9 @@ Tested with :
   - Ubuntu 18.04.x :heavy_check_mark:
   - Ubuntu 20.04.x :heavy_check_mark:
 
+> Note : Only the major 4.1 is currently being handled and tested by this role.  
+Work is in progress to integrate the latest 4.3 which breaks a lot of current things.
+
 ---
 
 - [PgPool](#pgpool)
