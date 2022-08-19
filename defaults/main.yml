@@ -22,7 +22,7 @@ pgpool_extensions:
 # postgresql related variables
 # The major version of your pgpool backends
 # See follow_master and recovery_1st_stage bash scripts
-pgpool_postgresql_version: 12
+pgpool_postgresql_version: 13
 pgpool_postgresql_cluster_name: main
 pgpool_postgresql_service_user: postgres
 pgpool_postgresql_service_group: postgres
