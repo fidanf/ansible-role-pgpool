@@ -31,11 +31,14 @@
     dest: /etc/apt/preferences.d/apt_postgresql_org_pub_repos_apt.pref
     mode: 0644
 
+- name: Apt | Define PgPool version to be installed
+  set_fact:
+    pgpool2_apt: pgpool2={{ pgpool_version_debian }}
+  when: pgpool_version_debian is defined
+
 - name: Apt | Install PgPool
   apt:
-    name: 
-      - pgpool2
-      - postgresql-{{ pgpool_postgresql_version }}-pgpool2
+    name: "{{ pgpool2_apt|default('pgpool2') }}"
     state: present
     update_cache: yes
     default_release: "{{ ansible_distribution_release + '-pgdg' }}"

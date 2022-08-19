@@ -3,7 +3,7 @@
 pgpool_apt_install: yes
 pgpool_apt_key_id: "ACCC4CF8"
 pgpool_apt_key_url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
-pgpool_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
+pgpool_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main {{ pgpool_postgresql_version }}"
 pgpool_apt_archive_repositories:
   - "deb https://apt-archive.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg-archive main"
   - "deb-src https://apt-archive.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg-archive main"
@@ -15,13 +15,20 @@ pgpool_apt_dependencies:
 pgpool_extensions:
   - pgpool_recovery
   - pgpool_adm
+# Set this variable if you want to install a specific version list in the apt repositories
+# Example : 4.1.4-6.pgdg110+1
+# pgpool_version_debian: ''
+
+# postgresql related variables
+# The major version of your pgpool backends
+# See follow_master and recovery_1st_stage bash scripts
 pgpool_postgresql_version: 12
 pgpool_postgresql_cluster_name: main
 pgpool_postgresql_service_user: postgres
 pgpool_postgresql_service_group: postgres
-pgpool_postgres_password_cleartext: postgres
 pgpool_postgresql_home_directory: /var/lib/postgresql
 pgpool_postgresql_data_directory: "{{ pgpool_postgresql_home_directory }}/{{ pgpool_postgresql_version }}/{{ pgpool_postgresql_cluster_name }}"
+pgpool_postgres_password_cleartext: postgres
 
 # systemd
 pgpool_systemd_state: started
