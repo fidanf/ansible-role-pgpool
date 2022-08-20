@@ -32,4 +32,4 @@ before_install:
     molecule --version
 
 script:
-  - sudo -E molecule test
+  - molecule test
