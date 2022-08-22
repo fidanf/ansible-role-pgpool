@@ -23,8 +23,13 @@ before_install:
     curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
     sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
     sudo apt-get update && sudo apt-get install vagrant
-    sudo apt-get install -y build-essential qemu-kvm qemu-utils libvirt-dev libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-manager dnsmasq
-    CONFIGURE_ARGS="with-libvirt-include=/usr/share/libvirt with-libvirt-lib=/usr/lib64" sudo vagrant plugin install vagrant-libvirt
+    sudo apt-get install -y build-essential qemu-kvm qemu-utils libvirt-dev libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-manager
+    sudo -H -u travis \
+      CONFIGURE_ARGS="with-libvirt-include=/usr/share/libvirt with-libvirt-lib=/usr/lib64" vagrant plugin install vagrant-libvirt
+  - |
+    sudo usermod -aG libvirt travis
+    sudo usermod -aG kvm travis
+    vagrant --version
   - |
     sudo -H pip install --upgrade pip
     sudo -H pip install --upgrade --ignore-installed --requirement requirements.txt
@@ -32,4 +37,4 @@ before_install:
     molecule --version
 
 script:
-  - molecule test
+  - sudo -E molecule test
