@@ -47,7 +47,7 @@ provisioner:
   inventory:
     group_vars:
       pgpool: 
-        pgpool_version_debian: 4.1.4-6.pgdg110+1
+        pgpool_version_debian: ${PGPOOL_VERSION_DEBIAN:-"4.1.4-6.pgdg110+1"}
     host_vars:
       pgsql01:
         # ansible
