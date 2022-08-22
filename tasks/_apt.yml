@@ -38,7 +38,7 @@
 
 - name: Apt | Install PgPool
   apt:
-    name: "{{ pgpool2_apt|default('pgpool2') }}"
+    name: "{{ pgpool2_apt | default('pgpool2') }}"
     state: present
     update_cache: yes
     default_release: "{{ ansible_distribution_release + '-pgdg' }}"
