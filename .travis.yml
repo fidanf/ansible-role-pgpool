@@ -9,9 +9,11 @@ env:
   global:
     - VAGRANT_DEFAULT_PROVIDER: libvirt
     - PY_COLORS: 1
-  jobs:
-    - MOLECULE_DISTRO: generic/ubuntu2004
-    - MOLECULE_DISTRO: generic/debian11
+
+jobs:
+  include:
+    - env: MOLECULE_DISTRO=generic/ubuntu2004 PGPOOL_VERSION_DEBIAN=4.1.4-6.pgdg20.04+1
+    - env: MOLECULE_DISTRO=generic/debian11
 
 cache:
   directories:
@@ -37,4 +39,4 @@ before_install:
     molecule --version
 
 script:
-  - sudo -E molecule test
+  - sudo -E molecule --debug test --destroy=never
