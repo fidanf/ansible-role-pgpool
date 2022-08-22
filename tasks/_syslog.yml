@@ -28,7 +28,7 @@
     regex: ^SyslogFacility=
     line: SyslogFacility={{ pgpool_syslog_facility | lower }}
     mode: 0644
-  notify: reload pgpool2
+  notify: Reload pgpool2
 
 - name: Syslog | Patch rsyslog obsolete configuration
   lineinfile:
@@ -45,14 +45,14 @@
     - PrivDropToUser
     - PrivDropToGroup
   when: pgpool_patch_syslog is defined and pgpool_patch_syslog | bool
-  notify: restart rsyslog
+  notify: Restart rsyslog
 
 - name: Syslog | Update rsyslog configuration
   template:
     src: rsyslog.pgpool.conf.j2
     dest: /etc/rsyslog.d/pgpool.conf
     mode: 0644
-  notify: restart rsyslog
+  notify: Restart rsyslog
 
 - name: Syslog | Create cron task for faster rotation checks
   cron:
