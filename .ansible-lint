@@ -2,6 +2,7 @@
 # https://docs.ansible.com/ansible-lint/rules/default_rules.html
 exclude_paths: 
   - ../.ansible/roles/
+  - ~/.cache/molecule/ansible-role-pgpool/default/roles/
   - .cache/
   - .github/
 verbosity: 1
@@ -13,5 +14,7 @@ skip_list:
   - empty-string-compare
   - ignore-errors
   - var-naming
+  - fqcn-builtins
+  - schema
 warn_list:
   - no-log-password

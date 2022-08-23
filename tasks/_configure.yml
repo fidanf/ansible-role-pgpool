@@ -59,7 +59,7 @@
     owner: "{{ pgpool_user }}"
     group: "{{ pgpool_group }}"
     mode: 0775
-  notify: reload pgpool2
+  notify: Reload pgpool2
 
 - name: Configure | Upload pool_hba.conf
   template:

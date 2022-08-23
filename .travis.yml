@@ -9,9 +9,11 @@ env:
   global:
     - VAGRANT_DEFAULT_PROVIDER: libvirt
     - PY_COLORS: 1
-  jobs:
-    - MOLECULE_DISTRO: generic/ubuntu2004
-    - MOLECULE_DISTRO: generic/debian11
+
+jobs:
+  include:
+    - env: MOLECULE_DISTRO=generic/ubuntu2004 PGPOOL_VERSION_DEBIAN=4.1.4-6.pgdg20.04+1
+    - env: MOLECULE_DISTRO=generic/debian11
 
 cache:
   directories:
@@ -24,7 +26,12 @@ before_install:
     sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
     sudo apt-get update && sudo apt-get install vagrant
     sudo apt-get install -y build-essential qemu-kvm qemu-utils libvirt-dev libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-manager dnsmasq
-    CONFIGURE_ARGS="with-libvirt-include=/usr/share/libvirt with-libvirt-lib=/usr/lib64" sudo vagrant plugin install vagrant-libvirt
+    sudo -H -u travis \
+      CONFIGURE_ARGS="with-libvirt-include=/usr/share/libvirt with-libvirt-lib=/usr/lib64" vagrant plugin install vagrant-libvirt
+  - |
+    sudo usermod -aG libvirt travis
+    sudo usermod -aG kvm travis
+    vagrant --version
   - |
     sudo -H pip install --upgrade pip
     sudo -H pip install --upgrade --ignore-installed --requirement requirements.txt
@@ -32,4 +39,4 @@ before_install:
     molecule --version
 
 script:
-  - sudo -E molecule test
+  - sudo -E molecule --debug test --destroy=never
