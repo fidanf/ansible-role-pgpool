@@ -45,6 +45,9 @@ provisioner:
   name: ansible
   log: true
   inventory:
+    group_vars:
+      pgpool: 
+        pgpool_version_debian: ${PGPOOL_VERSION_DEBIAN:-"4.1.4-6.pgdg110+1"}
     host_vars:
       pgsql01:
         # ansible
@@ -73,7 +76,7 @@ provisioner:
           - hostname: pgsql01
   config_options:
     defaults:
-      callback_whitelist: "profile_tasks,timer"
+      callbacks_enabled: "profile_tasks,timer"
       allow_world_readable_tmpfiles: true
       interpreter_python: /usr/bin/python3
       pipelining: true

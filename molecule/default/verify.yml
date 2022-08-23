@@ -14,6 +14,16 @@
     pgpool_user: pgpool
 
   tasks:
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Ensure pgpool2 version matches pgpool_version_debian
+      assert: 
+        that: ansible_facts.packages['pgpool2'][0]['version'] == pgpool_version_debian
+        success_msg: Installed pgpool2 version '{{ ansible_facts.packages['pgpool2'][0]['version'] }}' matches pgpool_version_debian 
+        fail_msg: There is mismatch between the expected and the installed version!
+
     - name: Start Pg-Pool II
       systemd: 
         name: pgpool2

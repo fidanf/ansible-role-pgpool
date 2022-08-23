@@ -7,7 +7,7 @@
   roles:
     - name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
       vars:
-        pgpool_postgresql_version: 12
+        pgpool_postgresql_version: 13
         # .pcpass file
         pgpool_pcppass_entries: 
           - hostname: pgsql01

@@ -1,11 +1,11 @@
 ---
-- name: restart rsyslog
+- name: Restart rsyslog
   systemd:
     name: rsyslog
     state: restarted
     daemon_reload: yes
 
-- name: reload pgpool2
+- name: Reload pgpool2
   systemd:
     name: pgpool2
     state: reloaded
