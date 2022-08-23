@@ -11,8 +11,9 @@ Tested with :
   - Ubuntu 18.04.x :heavy_check_mark:
   - Ubuntu 20.04.x :heavy_check_mark:
 
-> Note : Only the major 4.1 is currently being handled and tested by this role.  
-Work is in progress to integrate the latest 4.3 which breaks a lot of current things.
+> :warning: Only the major 4.1 is currently being handled and tested by this role.  
+Work is in progress to integrate the latest 4.3 which breaks a lot of current things.  
+For example, to install the version [4.1.4](https://www.pgpool.net/docs/42/en/html/release-4-1-4.html), Debian 11 hosts should set `pgpool_version_debian: 4.1.4-6.pgdg110+1`, whereas Ubuntu 20.04 hosts should rather use `pgpool_version_debian: 4.1.4-6.pgdg20.04+1`.
 
 ---
 
