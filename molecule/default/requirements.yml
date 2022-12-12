@@ -1,5 +1,5 @@
 ---
 roles:
-  - src: https://github.com/fidanf/ansible-role-postgresql-ha
-    name: fidanf.postgresql_ha
+  - src: https://github.com/rgsystemes/ansible-role-postgresql-ha
+    name: rgsystemes.postgresql_ha
     version: 2.5.1

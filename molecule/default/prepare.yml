@@ -40,7 +40,7 @@
 
   roles:
     # working around wrong ANSIBLE_ROLES_PATH built by the current molecule version 
-    - name: "{{ lookup('env','MOLECULE_EPHEMERAL_DIRECTORY') }}/roles/fidanf.postgresql_ha"
+    - name: "{{ lookup('env','MOLECULE_EPHEMERAL_DIRECTORY') }}/roles/rgsystemes.postgresql_ha"
       vars:
         # repmgr
         repmgr_version: 5.3
