@@ -1,8 +1,6 @@
 PgPool
 =========
 
-[![Build Status](https://travis-ci.com/fidanf/ansible-role-pgpool.svg?branch=master)](https://travis-ci.com/fidanf/ansible-role-pgpool)
-
 Installs and configures PgPool-II for Debian/Ubuntu. The default _running mode_ is **streaming replication mode**.
 
 Tested with :
@@ -50,7 +48,7 @@ Example Playbook
 
 Check out both [inventory.yml](./inventory.yml) and [example.yml](./example.yml) to get a picture of how this role should be used to integrate with an exisiting postgreSQL cluster managed by repmgr.
 
-If you're looking for a role solely dedicated to provide such an environment, take a look at [ansible-role-postgresql-ha](https://github.com/fidanf/ansible-role-postgresql-ha) 
+If you're looking for a role solely dedicated to provide such an environment, take a look at [ansible-role-postgresql-ha](https://github.com/rgsystemes/ansible-role-postgresql-ha) 
 
 Configuration checking commands
 ------------------------------
